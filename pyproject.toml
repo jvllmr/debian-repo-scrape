@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "debian-repo-check"
+version = "0.1.0"
+description = "Utilities for scraping and verifying debian package repositories"
+authors = ["Jan Vollmer <zunder325@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+requests = "^2.27.1"
+python-gnupg = "^0.4.8"
+python-debian = "^0.1.43"
+beautifulsoup4 = "^4.10.0"
+PGPy = "^0.5.4"
+
+[tool.poetry.dev-dependencies]
+Flask = "^2.1.1"
+pytest = "^7.1.1"
+black = "^22.3.0"
+pre-commit = "^2.17.0"
+mypy = "^0.942"
+pytest-cov = "^3.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,12 @@
+<html >
+<head><title>Index of {{ basedir }}</title></head>
+<body cz-shortcut-listen="true">
+<h1>Index of {{ basedir }}</h1><hr><pre><a href="../">../</a>
+{% for dir in dirs %}
+<a href="{{ dir.name }}/">{{ dir.name }}/</a>{{ get_padding(dir.name+"/") }}{{ dir.date }}                  -
+{% endfor %}
+{% for file in files %}
+<a href="{{ file.name }}">{{ file.name }}</a>{{ get_padding(file.name) }}{{ file.date }}                  {{ file.size }}
+{% endfor %}
+</pre><hr></body>
+</html>

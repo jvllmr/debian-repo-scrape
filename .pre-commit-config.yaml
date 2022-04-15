@@ -1,0 +1,55 @@
+fail_fast: true
+repos:
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.2.4
+    hooks:
+      - id: python-safety-dependencies-check
+        args: [--ignore=40459]
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.31.1
+    hooks:
+      - id: pyupgrade
+  - repo: https://github.com/hadialqattan/pycln
+    rev: "v1.2.5"
+    hooks:
+      - id: pycln
+  - repo: https://github.com/PyCQA/isort
+    rev: "5.10.1"
+    hooks:
+      - id: isort
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+  - repo: https://github.com/pycqa/flake8
+    rev: "4.0.1"
+    hooks:
+      - id: flake8
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: mypy
+        name: typechecking
+        pass_filenames: true
+        types: [python]
+        language: script
+        entry: .venv/bin/mypy --install-types --non-interactive
+      - id: pytest
+        name: pytest
+        pass_filenames: false
+        language: script
+        stages: [commit, merge-commit]
+        types_or: [python, toml]
+        entry: .venv/bin/pytest
+      - id: pytest-cov
+        name: pytest-cov
+        pass_filenames: false
+        language: script
+        stages: [push]
+        types_or: [python, toml]
+        entry: .venv/bin/pytest --cov debian_repo_tools --cov-report html:coverage

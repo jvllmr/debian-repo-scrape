@@ -1,0 +1,9 @@
+Source: poem
+Section: Database
+Priority: optional
+Maintainer: Jan Vollmer <janv@unknown>
+Standards-Version: 4.6.0
+Package: poem
+Architecture: all
+Description: This adds a cool poem to /etc/dummyapp/
+Version: 1.0

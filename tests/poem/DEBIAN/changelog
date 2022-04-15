@@ -1,0 +1,5 @@
+poem (1.0-1) UNRELEASED; urgency=medium
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Jan Vollmer <janv@unknown>  Sun, 03 Apr 2022 16:02:25 +0200

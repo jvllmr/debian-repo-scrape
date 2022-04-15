@@ -1,0 +1,5 @@
+Component: main
+Origin: Testrepo
+Label: Testing repo
+Architecture: amd64
+Description: A repo for testing debian_repo_tools

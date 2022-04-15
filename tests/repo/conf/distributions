@@ -1,0 +1,7 @@
+Origin: Testrepo
+Label: Testing repo
+Codename: mx
+Architectures: i386 amd64 armhf
+Components: main non-free
+Description: A repo for testing debian_repo_tools
+SignWith: DE58952F313EB6F54FBACD61E9FE1BEF3BC5F284
