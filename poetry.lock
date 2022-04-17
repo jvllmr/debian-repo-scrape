@@ -465,14 +465,6 @@ python-versions = ">=3.5"
 chardet = "*"
 
 [[package]]
-name = "python-gnupg"
-version = "0.4.8"
-description = "A wrapper for the Gnu Privacy Guard (GPG or GnuPG)"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
@@ -604,7 +596,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "e87d7a969c09c1dbe41b4ccfe69ecc7063ff1e505fb448ac207001f8f0b93f1c"
+content-hash = "882b778238763592b7a70b3e834fa11d7ede96612bf91d846c6c2c419900f789"
 
 [metadata.files]
 atomicwrites = [
@@ -959,10 +951,6 @@ python-debian = [
     {file = "python-debian-0.1.43.tar.gz", hash = "sha256:abc702511c4e268da49c22fd97c83de355c559f3271e0798a6b67964be3d8248"},
     {file = "python_debian-0.1.43-py3-none-any.whl", hash = "sha256:0cc0e09434c019d8f6380d1ce965de2a1e51b454f0b2fb86469486556594cbfc"},
     {file = "python_debian-0.1.43-py3.9.egg", hash = "sha256:7b5f55358c9b8a5fdea8a2116a145a3345eb51f94b4a71a84071997d58adcf58"},
-]
-python-gnupg = [
-    {file = "python-gnupg-0.4.8.tar.gz", hash = "sha256:b64de1ae5cedf872b437201a566fa2c62ce0c95ea2e30177eb53aee1258507d7"},
-    {file = "python_gnupg-0.4.8-py2.py3-none-any.whl", hash = "sha256:93a521501d6c2785d96b190aec7125ba89c1c2fe708b0c98af3fb32b59026ab8"},
 ]
 pyyaml = [
     {file = "PyYAML-6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d4db7c7aef085872ef65a8fd7d6d09a14ae91f691dec3e87ee5ee0539d516f53"},

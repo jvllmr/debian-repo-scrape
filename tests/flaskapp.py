@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass
 from datetime import datetime
 
-from flask import Flask, abort, render_template
+from flask import Flask, abort, render_template, send_file
 
 
 @dataclass
@@ -37,6 +37,11 @@ def create_app():
 
         dirs: list[Directory] = []
         files: list[File] = []
+
+        try:
+            obj = os.listdir(requested_thingy)
+        except NotADirectoryError:
+            return send_file(requested_thingy)
 
         for obj in os.listdir(requested_thingy):
             obj_path = os.path.join(requested_thingy, obj)
