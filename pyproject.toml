@@ -20,7 +20,30 @@ pre-commit = "^2.17.0"
 mypy = "^0.942"
 pytest-cov = "^3.0.0"
 pytest-lazy-fixture = "^0.6.3"
+tox-poetry = "^0.4.1"
+tox = "^3.25.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.mypy]
+files = ["debian_repo_scrape"]
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist= py37,py38, py39, py310
+
+[testenv]
+commands =
+    pytest
+
+"""

@@ -129,7 +129,11 @@ class PredefinedSuitesNavigator(BaseNavigator):
         if not base_url.endswith("/"):
             base_url += "/"
         for suite in suites:
-            suite_release_url = urljoin(base_url, "/".join(["dists", suite, "Release"]))
+            release_path = "/".join(["dists", suite, "Release"])
+            self._paths.append(release_path)
+            release_sig_path = "/".join(["dists", suite, "Release.gpg"])
+            self._paths.append(release_sig_path)
+            suite_release_url = urljoin(base_url, release_path)
             resp = requests.get(suite_release_url)
             if resp.status_code != 200:
                 continue
@@ -168,7 +172,7 @@ class ApacheBrowseNavigator(BaseNavigator):
 
     def _parse_directions(self) -> list[str]:
         soup = self.current_soup
-        if not soup:
+        if not soup or not soup.pre:
             return []
         links: list[bs4.element.Tag] = soup.pre.find_all("a")
 
