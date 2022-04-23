@@ -3,7 +3,7 @@ import multiprocessing
 from flaskapp import create_app
 from pytest import fixture
 
-from debian_repo_check.navigation import PageNavigator
+from debian_repo_scrape.navigation import ApacheBrowseNavigator
 
 
 @fixture(scope="session", autouse=True)
@@ -23,5 +23,5 @@ def repo_url():
 
 
 @fixture()
-def navigator(repo_url):
-    return PageNavigator(repo_url)
+def apache_navigator(repo_url):
+    return ApacheBrowseNavigator(repo_url)
