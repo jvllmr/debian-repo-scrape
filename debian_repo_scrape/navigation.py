@@ -5,7 +5,6 @@ import bs4.element
 import requests
 from bs4 import BeautifulSoup
 from debian.deb822 import Release, Packages
-import difflib
 
 
 class BaseNavigator(metaclass=ABCMeta):
@@ -82,12 +81,12 @@ class BaseNavigator(metaclass=ABCMeta):
         """
 
     @property
-    def directions(self):
-        directions = [
+    def directions(self) -> set[str]:
+        directions = {
             d if "/" not in d else d.split("/")[0] for d in self._parse_directions()
-        ]
-        if self.current_url.strip("/").count("/") > 3 and ".." not in directions:
-            directions.append("..")
+        }
+        if self.current_url.strip("/").count("/") > 2 and ".." not in directions:
+            directions.add("..")
         return directions
 
     @property
@@ -119,9 +118,14 @@ class PredefinedSuitesNavigator(BaseNavigator):
     be discovered
     """
 
-    def __init__(self, base_url: str, suites: t.Iterable[str]) -> None:
-        self._suites_map: dict[str, str] = {suite: [] for suite in suites}
-        self._pool: list[str] = []
+    def __init__(
+        self,
+        base_url: str,
+        suites: t.Iterable[str],
+        predefined_paths: list[str] | None = None,
+    ) -> None:
+
+        self._paths: list[str] = predefined_paths or []
         if not base_url.endswith("/"):
             base_url += "/"
         for suite in suites:
@@ -132,7 +136,7 @@ class PredefinedSuitesNavigator(BaseNavigator):
             release_file = Release(resp.content.split(b"\n"))
             for file in release_file["SHA256"]:
                 filename: str = file["name"]
-                self._suites_map[suite].append(filename)
+                self._paths.append(f"dists/{suite}/{filename}")
                 if filename.endswith("Packages"):
                     packages_url = urljoin(suite_release_url.strip("Release"), filename)
                     resp = requests.get(packages_url)
@@ -140,34 +144,21 @@ class PredefinedSuitesNavigator(BaseNavigator):
                         continue
                     packages_file = Packages(resp.content.split(b"\n"))
                     if "Filename" in packages_file:
-                        self._pool.append(packages_file["Filename"])
+                        self._paths.append(packages_file["Filename"])
 
         super().__init__(base_url)
 
-    def _parse_directions(self) -> list[str]:
+    def reset(self):
+        super().__init__(self.base_url)
+
+    def _parse_directions(self) -> t.Iterable[str]:
         base_url = self.base_url.strip("/")
         curr_url = self.current_url.strip("/")
         base_url_diff = curr_url[len(base_url) :]
-        if base_url == curr_url:
-            return ["dists"] + self._pool
-        elif base_url_diff == "/dists":
-            return [k for k in self._suites_map.keys()]
-
-        elif base_url_diff.startswith("/dists"):
-            for suite, paths in self._suites_map.items():
-                suite_subpath = f"/dists/{suite}"
-                if base_url_diff == suite_subpath:
-                    return paths
-                elif base_url_diff.startswith(suite_subpath):
-                    res = []
-                    for path in paths:
-                        overlap = base_url_diff[len(suite_subpath) + 1 :]
-                        res.append(path[len(overlap) + 1 :])
-                    return res
 
         return [
             path[len(base_url_diff) :]
-            for path in self._pool
+            for path in self._paths
             if path.startswith(base_url_diff.strip("/"))
         ]
 
