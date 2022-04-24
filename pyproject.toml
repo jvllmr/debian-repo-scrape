@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "debian-repo-scrape"
-version = "0.1.0"
+version = "0.1.1"
 description = "Utilities for verifying debian repositories and retrieving their information"
 authors = ["Jan Vollmer <zunder325@gmail.com>"]
 license = "MIT License"

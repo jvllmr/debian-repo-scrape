@@ -1,5 +1,6 @@
 import os
 
+import pytest
 import requests
 
 from debian_repo_scrape.scrape import scrape_repo
@@ -20,6 +21,9 @@ def test_scrape_test_repo(navigator):
         assert suite.components
 
 
+skip_long = not os.getenv("PYTEST_LONGTESTS", "")
+
+
 class GetPubKey:
     def __init__(self, url: str) -> None:
         self.url = url
@@ -34,6 +38,7 @@ class GetPubKey:
         os.remove("temp_key_file.asc")
 
 
+@pytest.mark.skipif(skip_long, reason="Test takes too long")
 def test_scrape_postgresql():
     with GetPubKey("https://ftp.postgresql.org/pub/repos/apt/ACCC4CF8.asc"):
         scrape_repo(
@@ -42,6 +47,7 @@ def test_scrape_postgresql():
         )
 
 
+@pytest.mark.skipif(skip_long, reason="Test takes too long")
 def test_scrape_spotify():
     with GetPubKey("https://download.spotify.com/debian/pubkey_5E3C45D7B312C643.gpg"):
         scrape_repo(
@@ -50,9 +56,19 @@ def test_scrape_spotify():
         )
 
 
+@pytest.mark.skipif(skip_long, reason="Test takes too long")
 def test_scrape_nodesource():
     with GetPubKey("https://deb.nodesource.com/gpgkey/nodesource.gpg.key"):
         scrape_repo(
             "https://deb.nodesource.com/node_14.x/",
+            pub_key_file="temp_key_file.asc",
+        )
+
+
+@pytest.mark.skipif(skip_long, reason="Test takes too long")
+def test_scrape_pgadmin4():
+    with GetPubKey("https://www.pgadmin.org/static/packages_pgadmin_org.pub"):
+        scrape_repo(
+            "https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/focal/",
             pub_key_file="temp_key_file.asc",
         )
