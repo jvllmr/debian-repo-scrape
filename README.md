@@ -1,6 +1,6 @@
 # debian-repo-scrape
 
-debian-repo-scrape contains utilities for verifying the integrity of a debian repository and scrape its contents.
+debian-repo-scrape contains utilities for verifying the integrity of a debian repository and scraping its contents.
 
 # TODO:
 - Increase test coverage
