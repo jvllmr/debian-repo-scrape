@@ -1,6 +1,7 @@
 import multiprocessing
 import time
 
+from flask import Flask
 from flaskapp import create_app
 from pytest import fixture
 from pytest_lazyfixture import lazy_fixture
@@ -15,7 +16,11 @@ from debian_repo_scrape.navigation import (
 def app():
 
     app = create_app()
-    p = multiprocessing.Process(target=app.run)
+
+    def worker(app: Flask):
+        app.run()
+
+    p = multiprocessing.Process(target=worker, args=(app,))
     p.start()
     time.sleep(2)
     yield
