@@ -1,8 +1,10 @@
 import multiprocessing
+import time
 
 from flaskapp import create_app
 from pytest import fixture
 from pytest_lazyfixture import lazy_fixture
+
 from debian_repo_scrape.navigation import (
     ApacheBrowseNavigator,
     PredefinedSuitesNavigator,
@@ -15,7 +17,7 @@ def app():
     app = create_app()
     p = multiprocessing.Process(target=app.run)
     p.start()
-
+    time.sleep(2)
     yield
     p.terminate()
 
