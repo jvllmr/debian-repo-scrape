@@ -33,13 +33,6 @@ repos:
       - id: trailing-whitespace
   - repo: local
     hooks:
-      - id: pytest
-        name: pytest
-        pass_filenames: false
-        language: script
-        stages: [commit, merge-commit]
-        types_or: [python, toml]
-        entry: .venv/bin/pytest
       - id: pytest-cov
         name: pytest-cov
         pass_filenames: false
