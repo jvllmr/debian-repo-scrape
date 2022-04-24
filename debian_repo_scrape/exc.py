@@ -13,8 +13,12 @@ class FileError(IntegrityError):
 
 
 class FileRequestError(FileError):
+    def __init__(self, file: str, status_code: str, *args) -> None:
+        self.status_code = status_code
+        super().__init__(file, *args)
+
     def __str__(self) -> str:
-        return f"File {self.file} could not requested from the repository"
+        return f"File {self.file} could not be requested from the repository - Status Code: {self.status_code}"  # noqa: E501
 
 
 class HashInvalid(FileError):

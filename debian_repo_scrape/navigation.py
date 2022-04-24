@@ -18,8 +18,10 @@ class BaseNavigator(metaclass=ABCMeta):
     """
 
     def __init__(self, base_url: str) -> None:
+        if not base_url.endswith("/"):
+            base_url += "/"
         self.base_url = base_url
-        self.current_url = base_url
+        self._current_url = base_url
         self._last_response = requests.get(base_url)
         self._refresh_soup()
 
@@ -52,8 +54,8 @@ class BaseNavigator(metaclass=ABCMeta):
         else:
             new_url = urljoin(curr_url, item)
 
-        self._last_response = requests.get(new_url)
-        self.current_url = new_url
+        self._last_response = requests.get(new_url, allow_redirects=True)
+        self._current_url = new_url
         self._refresh_soup()
         return self
 
@@ -101,6 +103,12 @@ class BaseNavigator(metaclass=ABCMeta):
     @property
     def last_response(self):
         return self._last_response
+
+    @property
+    def current_url(self):
+        if not self._current_url.endswith("/"):
+            self._current_url += "/"
+        return self._current_url
 
     @property
     def current_soup(self):

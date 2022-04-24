@@ -1,15 +1,24 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
-from datetime import datetime
+from urllib.parse import urljoin
 
 from debian_repo_scrape.navigation import ApacheBrowseNavigator, BaseNavigator
+from debian_repo_scrape.utils import get_packages_files, get_release_file
+from debian_repo_scrape.verify import verify_hash_sums, verify_release_signatures
+
+log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
 class Repository:
     url: str
     suites: list[Suite]
+
+    @property
+    def packages(self) -> list[Package]:
+        return [p for s in self.suites for p in s.packages]
 
 
 @dataclass(frozen=True)
@@ -18,7 +27,7 @@ class Suite:
     components: list[Component]
     url: str
     architectures: list[str]
-    date: datetime
+    date: str
 
     @property
     def packages(self) -> list[Package]:
@@ -41,12 +50,75 @@ class Package:
     sha256: str
     sha1: str
     md5: str
-    description: str
+    description: str | None
     maintainer: str
-    section: str
-    priority: str
+    section: str | None
+    priority: str | None
+    date: str
+    architecture: str
 
 
-def scrape_repo(repoURL: str | BaseNavigator, verify: bool = True) -> Repository:
+def scrape_repo(
+    repoURL: str | BaseNavigator, verify: bool = True, pub_key_file: str | None = None
+) -> Repository:
     navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
-    navigator
+
+    if verify:
+        verify_hash_sums(navigator)
+        if pub_key_file is None:
+            log.warning(
+                """
+                Verfying debian repsotiry integrity, but no public key was given.
+                As a result the release signatures will not be verified.
+                """
+            )
+        else:
+            verify_release_signatures(navigator, pub_key_file)
+
+    navigator["dists"]
+    suites: list[Suite] = []
+    for suite in navigator.directions:
+        if suite == "..":
+            continue
+
+        release_file = get_release_file(navigator.base_url, suite)
+        components: list[Component] = []
+        for component, packages in get_packages_files(
+            navigator.base_url, suite
+        ).items():
+            pkgs = [
+                Package(
+                    name=p["Package"],
+                    version=p["version"],
+                    url=urljoin(navigator.base_url, p["filename"]),
+                    architecture=p["architecture"],
+                    date=release_file["date"],
+                    section=p.get("section"),
+                    size=int(p["size"]),
+                    sha256=p["sha256"],
+                    sha1=p["sha1"],
+                    md5=p["md5sum"],
+                    priority=p.get("priority"),
+                    maintainer=p["maintainer"],
+                    description=p.get("description"),
+                )
+                for p in packages
+            ]
+            components.append(
+                Component(
+                    name=component,
+                    packages=pkgs,
+                    url=urljoin(navigator.base_url, f"dists/{suite}/{component}"),
+                )
+            )
+        suites.append(
+            Suite(
+                name=suite,
+                url=urljoin(navigator.base_url, f"{suite}"),
+                components=components,
+                architectures=release_file["architectures"],
+                date=release_file["date"],
+            )
+        )
+    navigator.reset()
+    return Repository(url=navigator.base_url, suites=suites)

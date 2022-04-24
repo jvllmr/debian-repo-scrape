@@ -45,4 +45,4 @@ repos:
         language: script
         stages: [push]
         types_or: [python, toml]
-        entry: .venv/bin/pytest --cov debian_repo_tools --cov-report html:coverage
+        entry: .venv/bin/pytest --cov debian_repo_scrape --cov-report html:coverage

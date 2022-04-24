@@ -5,7 +5,7 @@ import typing as t
 from urllib.parse import urljoin
 
 import requests
-from debian.deb822 import Packages, Release
+from debian.deb822 import Packages
 from pgpy import PGPKey, PGPSignature
 
 from debian_repo_scrape.exc import (
@@ -16,6 +16,7 @@ from debian_repo_scrape.exc import (
     SHA256Invalid,
 )
 from debian_repo_scrape.navigation import ApacheBrowseNavigator, BaseNavigator
+from debian_repo_scrape.utils import _get_file, _get_release_file, get_release_file
 
 HASH_FUNCTION_MAP: list[tuple[str, t.Callable[[bytes], t.Any], HashInvalid]] = [
     ("MD5Sum", hashlib.md5, MD5SumInvalid),
@@ -29,16 +30,16 @@ def verify_release_signatures(repoURL: str | BaseNavigator, pub_key_file: str):
     navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
     pgp_key, _ = PGPKey.from_file(pub_key_file)
     navigator["dists"]
-    for dir_ in navigator.directions:
-        if dir_ == "..":
+    for suite in navigator.directions:
+        if suite == "..":
             continue
-        navigator[f"{dir_}/Release"]
-        release_file = navigator.content
-        navigator[".."]
 
-        navigator["Release.gpg"]
-        release_sig = PGPSignature.from_blob(navigator.content)
-        navigator["../.."]
+        release_file = _get_release_file(navigator.base_url, suite)
+
+        release_sig = PGPSignature.from_blob(
+            _get_file(navigator.base_url, f"dists/{suite}/Release.gpg")
+        )
+
         pgp_key.verify(release_file, release_sig)
     navigator.reset()
 
@@ -54,6 +55,8 @@ def _verify_file_hash(
     if not hashsum == expected:
         raise exc(url)
 
+    return resp.content
+
 
 def verify_hash_sums(repoURL: str | BaseNavigator):
     navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
@@ -61,19 +64,18 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
     for suite in navigator.directions:
         if suite == "..":
             continue
-        navigator[f"{suite}/Release"]
-        release_file = Release(navigator.content.split("\n"))
-        navigator[".."]
+
+        release_file = get_release_file(navigator.base_url, suite)
+        navigator[suite]
         for key, hash_method, exc in HASH_FUNCTION_MAP:
             for file in release_file[key]:
+                print(navigator.current_url)
                 file_url = urljoin(navigator.current_url, file["name"])
-                _verify_file_hash(file_url, file[key.lower()], hash_method, exc)
+                file_content = _verify_file_hash(
+                    file_url, file[key.lower()], hash_method, exc
+                )
                 if file_url.endswith("Packages"):
-                    resp = requests.get(file_url)
-                    if resp.status_code != 200:
-                        raise FileRequestError(file_url)
-
-                    packages_file = Packages(resp.content.split(b"\n"))
+                    packages_file = Packages(file_content.split(b"\n"))
                     if packages_file.keys():
                         for key_2, hash_method_2, exc_2 in HASH_FUNCTION_MAP:
                             deb_file_url = urljoin(
