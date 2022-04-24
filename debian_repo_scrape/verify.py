@@ -49,7 +49,7 @@ def _verify_file_hash(
 ):
     resp = requests.get(url, stream=True)
     if resp.status_code != 200:
-        raise FileRequestError(url)
+        raise FileRequestError(url, resp.status_code)
 
     hashsum = method(resp.content).hexdigest()
     if not hashsum == expected:
@@ -69,11 +69,14 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
         navigator[suite]
         for key, hash_method, exc in HASH_FUNCTION_MAP:
             for file in release_file[key]:
-                print(navigator.current_url)
                 file_url = urljoin(navigator.current_url, file["name"])
-                file_content = _verify_file_hash(
-                    file_url, file[key.lower()], hash_method, exc
-                )
+                try:
+                    file_content = _verify_file_hash(
+                        file_url, file[key.lower()], hash_method, exc
+                    )
+                except FileRequestError:
+                    if file_url.endswith("Packages"):
+                        raise
                 if file_url.endswith("Packages"):
                     packages_file = Packages(file_content.split(b"\n"))
                     if packages_file.keys():
@@ -84,6 +87,7 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
                             _verify_file_hash(
                                 deb_file_url, packages_file[key_2], hash_method_2, exc_2
                             )
+        navigator[".."]
 
     navigator.reset()
 

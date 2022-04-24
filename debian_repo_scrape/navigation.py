@@ -23,6 +23,7 @@ class BaseNavigator(metaclass=ABCMeta):
         self.base_url = base_url
         self._current_url = base_url
         self._last_response = requests.get(base_url)
+        self._soup = None
         self._refresh_soup()
 
     def reset(self):
@@ -44,7 +45,9 @@ class BaseNavigator(metaclass=ABCMeta):
                     return self
             return self
         elif item not in self.directions:
-            raise ValueError(f"{item} is not a valid item for navigation")
+            raise ValueError(
+                f"{item} is not a valid item for navigation. URL: {self.current_url}"
+            )
 
         if not curr_url.endswith("/"):
             curr_url += "/"
@@ -187,6 +190,8 @@ class ApacheBrowseNavigator(BaseNavigator):
     def _parse_directions(self) -> list[str]:
         soup = self.current_soup
         if not soup or not soup.pre:
+            if self.base_url == self.current_url:
+                return ["dists", "pool"]
             return []
         links: list[bs4.element.Tag] = soup.pre.find_all("a")
 
