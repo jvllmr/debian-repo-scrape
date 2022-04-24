@@ -23,6 +23,7 @@ pytest-lazy-fixture = "^0.6.3"
 tox-poetry = "^0.4.1"
 tox = "^3.25.0"
 types-beautifulsoup4 = "^4.10.20"
+flake8 = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
