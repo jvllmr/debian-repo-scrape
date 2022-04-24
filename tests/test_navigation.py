@@ -1,4 +1,4 @@
-from debian_repo_scrape.navigation import ApacheBrowseNavigator, BaseNavigator
+from debian_repo_scrape.navigation import BaseNavigator
 
 
 def test_navigation(navigator: BaseNavigator):

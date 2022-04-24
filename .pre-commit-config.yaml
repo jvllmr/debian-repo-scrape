@@ -29,6 +29,7 @@ repos:
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
+        exclude: "[Release, Release.gpg, Packages, Packages.gz, InRelease]"
       - id: trailing-whitespace
   - repo: local
     hooks:
