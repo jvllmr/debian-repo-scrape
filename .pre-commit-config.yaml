@@ -1,9 +1,4 @@
 repos:
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
-    rev: v1.2.4
-    hooks:
-      - id: python-safety-dependencies-check
-        args: [--ignore=40459]
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.31.1
     hooks:
