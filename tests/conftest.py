@@ -1,9 +1,6 @@
-import multiprocessing
-import time
-
-from flask import Flask
 from flaskapp import create_app
 from pytest import fixture
+from pytest_flask.live_server import LiveServer
 from pytest_lazyfixture import lazy_fixture
 
 from debian_repo_scrape.navigation import (
@@ -12,19 +9,14 @@ from debian_repo_scrape.navigation import (
 )
 
 
-@fixture(scope="session", autouse=True)
+@fixture(scope="session")
 def app():
+    return create_app()
 
-    app = create_app()
 
-    def worker(app: Flask):
-        app.run()
-
-    p = multiprocessing.Process(target=worker, args=(app,))
-    p.start()
-    time.sleep(2)
-    yield
-    p.terminate()
+@fixture(scope="session", autouse=True)
+def start_server(live_server: LiveServer):
+    pass
 
 
 @fixture()
