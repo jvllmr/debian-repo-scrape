@@ -20,6 +20,7 @@ class File(Directory):
 
 def create_app():
     app = Flask("testapp", template_folder=os.path.dirname(__file__))
+    app.config
 
     @app.get("/debian/<path:path>")
     def get_thingy(path: str):
@@ -41,7 +42,7 @@ def create_app():
         try:
             obj = os.listdir(requested_thingy)
         except NotADirectoryError:
-            return send_file(requested_thingy)
+            return send_file(requested_thingy, mimetype="application/octet-stream")
 
         for obj in os.listdir(requested_thingy):
             obj_path = os.path.join(requested_thingy, obj)

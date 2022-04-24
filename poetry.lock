@@ -581,6 +581,14 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "types-beautifulsoup4"
+version = "4.10.20"
+description = "Typing stubs for beautifulsoup4"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "4.2.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -646,7 +654,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "79e7f3fc94b72177b07ebcc6307c20b8c555e6d6496b6a56be0de68945e48ac5"
+content-hash = "78d4fedafccf6a6103d9bdb5949406be77f9efc8960e6075f8c516e2e420a5fc"
 
 [metadata.files]
 atomicwrites = [
@@ -1094,6 +1102,10 @@ typed-ast = [
     {file = "typed_ast-1.5.3-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:8831479695eadc8b5ffed06fdfb3e424adc37962a75925668deeb503f446c0a3"},
     {file = "typed_ast-1.5.3-cp39-cp39-win_amd64.whl", hash = "sha256:20d5118e494478ef2d3a2702d964dae830aedd7b4d3b626d003eea526be18718"},
     {file = "typed_ast-1.5.3.tar.gz", hash = "sha256:27f25232e2dd0edfe1f019d6bfaaf11e86e657d9bdb7b0956db95f560cceb2b3"},
+]
+types-beautifulsoup4 = [
+    {file = "types-beautifulsoup4-4.10.20.tar.gz", hash = "sha256:856ddb741576a94764392cba81b9dcf07fc0fe005fc753e487e2e9e0db2324ca"},
+    {file = "types_beautifulsoup4-4.10.20-py3-none-any.whl", hash = "sha256:0be4be522ce340ff3f5540c416adfda305bbb4d14f3fecadc2a9086c1dbd4b32"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.2.0-py3-none-any.whl", hash = "sha256:6657594ee297170d19f67d55c05852a874e7eb634f4f753dbd667855e07c1708"},

@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import typing as t
+from abc import ABCMeta, abstractmethod
 from urllib.parse import urljoin
-from abc import abstractmethod, ABCMeta
+
 import bs4.element
 import requests
 from bs4 import BeautifulSoup
-from debian.deb822 import Release, Packages
+from debian.deb822 import Packages, Release
 
 
 class BaseNavigator(metaclass=ABCMeta):
@@ -74,7 +77,7 @@ class BaseNavigator(metaclass=ABCMeta):
             self._soup = None
 
     @abstractmethod
-    def _parse_directions(self) -> list[str]:
+    def _parse_directions(self) -> t.Iterable[str]:
         """
         Parses the possible directions to go to and returns them as a list of strings.
         The string value must be the relative path from the current postition.
@@ -88,6 +91,12 @@ class BaseNavigator(metaclass=ABCMeta):
         if self.current_url.strip("/").count("/") > 2 and ".." not in directions:
             directions.add("..")
         return directions
+
+    @property
+    def url_diff(self):
+        return self.current_url.strip("/")[
+            len(self.base_url.strip("/")) :  # noqa: E203
+        ]
 
     @property
     def last_response(self):
@@ -156,14 +165,11 @@ class PredefinedSuitesNavigator(BaseNavigator):
         super().__init__(self.base_url)
 
     def _parse_directions(self) -> t.Iterable[str]:
-        base_url = self.base_url.strip("/")
-        curr_url = self.current_url.strip("/")
-        base_url_diff = curr_url[len(base_url) :]
 
         return [
-            path[len(base_url_diff) :]
+            path[len(self.url_diff) :]  # noqa: E203
             for path in self._paths
-            if path.startswith(base_url_diff.strip("/"))
+            if path.startswith(self.url_diff.strip("/"))
         ]
 
 
