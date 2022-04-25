@@ -81,9 +81,8 @@ def scrape_repo(
 
         release_file = get_release_file(navigator.base_url, suite)
         components: list[Component] = []
-        for component, packages in get_packages_files(
-            navigator.base_url, suite
-        ).items():
+        packages_map = get_packages_files(navigator.base_url, suite)
+        for component, packages in packages_map.items():
             pkgs = [
                 Package(
                     name=p["Package"],

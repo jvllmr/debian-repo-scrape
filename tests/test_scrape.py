@@ -17,8 +17,10 @@ def test_scrape_test_repo(navigator):
     for package in repo.packages:
         assert package.name == "poem"
     assert repo.suites
+    assert len(repo.suites) == 2
     for suite in repo.suites:
         assert suite.components
+        assert len(suite.components) == 1
 
 
 skip_long = not os.getenv("PYTEST_LONGTESTS", "")

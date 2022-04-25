@@ -50,7 +50,6 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
     navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
     navigator["dists"]
     for suite in get_suites(navigator):
-        print(suite)
         release_file = get_release_file(navigator.base_url, suite)
         navigator.set_checkpoint()
         navigator[suite]
