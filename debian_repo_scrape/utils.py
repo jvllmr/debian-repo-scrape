@@ -9,7 +9,7 @@ from debian.deb822 import Packages, Release
 from debian_repo_scrape.exc import FileRequestError
 
 
-@functools.cache
+@functools.lru_cache(None)
 def _get_response(url: str):
     return requests.get(url, allow_redirects=True)
 
