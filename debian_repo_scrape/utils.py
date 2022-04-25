@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import functools
+import typing as t
 from urllib.parse import urljoin
 
 import requests
 from debian.deb822 import Packages, Release
 
 from debian_repo_scrape.exc import FileRequestError
+
+if t.TYPE_CHECKING:
+    from debian_repo_scrape.navigation import BaseNavigator
 
 
 @functools.lru_cache(None)
@@ -69,3 +73,31 @@ def get_packages_files(repoURL: str, suite: str) -> dict[str, list[Packages]]:
         component: [Packages(p.split(b"\n")) for p in ps]
         for component, ps in _get_packages_files(repoURL, suite).items()
     }
+
+
+def __get_suites(navigator: BaseNavigator) -> list[str]:
+    suites: list[str] = []
+    for suite in navigator.directions:
+        if suite == "..":
+            continue
+        navigator[suite]
+        if "Release" not in navigator.directions:
+            for subsuite in __get_suites(navigator):
+                suites.append(f"{suite}/{subsuite}")
+        else:
+            suites.append(suite)
+
+        navigator[".."]
+
+    return suites
+
+
+def get_suites(navigator: BaseNavigator) -> list[str]:
+    navigator.set_checkpoint()
+    navigator.reset()
+    navigator["dists"]
+
+    suites = __get_suites(navigator)
+
+    navigator.use_checkpoint()
+    return suites

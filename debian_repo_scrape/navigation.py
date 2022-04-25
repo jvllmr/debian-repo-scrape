@@ -24,13 +24,16 @@ class BaseNavigator(metaclass=ABCMeta):
             base_url += "/"
         self.base_url = base_url
         self._current_url = base_url
-        self._last_response = requests.get(base_url)
+        self._last_response = _get_response(base_url)
         self._soup = None
+        self._checkpoints: list[str] = []
         self._refresh_soup()
 
     def reset(self):
         """Get back to the base url"""
-        self.__init__(self.base_url)
+        self._current_url = self.base_url
+        self._last_response = _get_response(self.base_url)
+        self._refresh_soup()
         return self
 
     def navigate(self, item: str):
@@ -106,6 +109,13 @@ class BaseNavigator(metaclass=ABCMeta):
         ]
 
     @property
+    def url_checkpoint_diff(self):
+
+        if not self.checkpoints:
+            raise ValueError("No checkpoint has been set.")
+        return self.checkpoints[-1]
+
+    @property
     def last_response(self):
         return self._last_response
 
@@ -123,6 +133,22 @@ class BaseNavigator(metaclass=ABCMeta):
     def content(self):
         """Returns content of latest request response"""
         return self.last_response.text
+
+    def set_checkpoint(self):
+        self._checkpoints.append(self.url_diff.strip("/"))
+
+    def use_checkpoint(self):
+        self.reset()
+        if self.url_checkpoint_diff:
+            self.navigate(self.url_checkpoint_diff)
+        self._checkpoints.pop()
+
+    def clear_checkpoints(self):
+        self._checkpoints = []
+
+    @property
+    def checkpoints(self):
+        return self._checkpoints
 
     def __repr__(self) -> str:
         return str(self)
@@ -173,9 +199,6 @@ class PredefinedSuitesNavigator(BaseNavigator):
                         self._paths.append(packages_file["Filename"])
 
         super().__init__(base_url)
-
-    def reset(self):
-        super().__init__(self.base_url)
 
     def _parse_directions(self) -> t.Iterable[str]:
 

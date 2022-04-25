@@ -27,3 +27,12 @@ def test_reset(navigator: BaseNavigator):
 def test_file_access(navigator: BaseNavigator):
     navigator["public_key.asc"]
     assert navigator.content.startswith("-----BEGIN PGP PUBLIC KEY BLOCK-----")
+
+
+def test_checkpoints(navigator: BaseNavigator):
+    navigator["dists"]
+    navigator.set_checkpoint()
+    navigator[".."]
+    navigator.use_checkpoint()
+    assert navigator.current_url.endswith("/dists/")
+    navigator.reset()

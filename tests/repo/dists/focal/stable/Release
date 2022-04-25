@@ -1,0 +1,64 @@
+Origin: Testrepo
+Label: Testing repo
+Codename: mx
+Date: Sun, 03 Apr 2022 14:16:41 UTC
+Architectures: i386 amd64 armhf
+Components: main non-free
+Description: A repo for testing debian_repo_tools
+MD5Sum:
+ 210907989282efb5fa884e167400bf13 429 main/binary-i386/Packages
+ 91a5e227be6e1f057d7edc0a2f7dee40 334 main/binary-i386/Packages.gz
+ f954c031536bddfc03cae5f725000c2b 122 main/binary-i386/Release
+ 210907989282efb5fa884e167400bf13 429 main/binary-amd64/Packages
+ 91a5e227be6e1f057d7edc0a2f7dee40 334 main/binary-amd64/Packages.gz
+ 845b6f37df137d1f686df499ba269b71 123 main/binary-amd64/Release
+ 210907989282efb5fa884e167400bf13 429 main/binary-armhf/Packages
+ 91a5e227be6e1f057d7edc0a2f7dee40 334 main/binary-armhf/Packages.gz
+ 9366ed37a37aba92dd3a765da15038bb 123 main/binary-armhf/Release
+ d41d8cd98f00b204e9800998ecf8427e 0 non-free/binary-i386/Packages
+ 7029066c27ac6f5ef18d660d5741979a 20 non-free/binary-i386/Packages.gz
+ e10bb05e161425243bc7a0b2f7a5f7fb 126 non-free/binary-i386/Release
+ d41d8cd98f00b204e9800998ecf8427e 0 non-free/binary-amd64/Packages
+ 7029066c27ac6f5ef18d660d5741979a 20 non-free/binary-amd64/Packages.gz
+ 7bd5da78e3b3dd9aba42b85ed3828a72 127 non-free/binary-amd64/Release
+ d41d8cd98f00b204e9800998ecf8427e 0 non-free/binary-armhf/Packages
+ 7029066c27ac6f5ef18d660d5741979a 20 non-free/binary-armhf/Packages.gz
+ 63f732be56a99c014fed22f723690fcf 127 non-free/binary-armhf/Release
+SHA1:
+ 6aa4672944f8c8a5df6dd03c5f4c0999fc1a2b0e 429 main/binary-i386/Packages
+ 95c4b756791bc1479ba1328386cd46521348ca7a 334 main/binary-i386/Packages.gz
+ 7d95d409055e51c20d02b3d7ddf053a89fe65336 122 main/binary-i386/Release
+ 6aa4672944f8c8a5df6dd03c5f4c0999fc1a2b0e 429 main/binary-amd64/Packages
+ 95c4b756791bc1479ba1328386cd46521348ca7a 334 main/binary-amd64/Packages.gz
+ 60d8121cdec959ab528abe3b457b0853c0ae5659 123 main/binary-amd64/Release
+ 6aa4672944f8c8a5df6dd03c5f4c0999fc1a2b0e 429 main/binary-armhf/Packages
+ 95c4b756791bc1479ba1328386cd46521348ca7a 334 main/binary-armhf/Packages.gz
+ 5168dd558c2b9f2e3a27baf5d34abb4a0b674a3b 123 main/binary-armhf/Release
+ da39a3ee5e6b4b0d3255bfef95601890afd80709 0 non-free/binary-i386/Packages
+ 46c6643f07aa7f6bfe7118de926b86defc5087c4 20 non-free/binary-i386/Packages.gz
+ 84edee63dc7a28bbf905853cc364b7f504f866e7 126 non-free/binary-i386/Release
+ da39a3ee5e6b4b0d3255bfef95601890afd80709 0 non-free/binary-amd64/Packages
+ 46c6643f07aa7f6bfe7118de926b86defc5087c4 20 non-free/binary-amd64/Packages.gz
+ 179f751778b74e64b61bce35b8ca95d449c40df1 127 non-free/binary-amd64/Release
+ da39a3ee5e6b4b0d3255bfef95601890afd80709 0 non-free/binary-armhf/Packages
+ 46c6643f07aa7f6bfe7118de926b86defc5087c4 20 non-free/binary-armhf/Packages.gz
+ b79711ca811a1958cedb1a653aee8837a7edd3e4 127 non-free/binary-armhf/Release
+SHA256:
+ d7d364f072e46221500cab4ae03fee471e4dea6c091bfa67e2d84a3d82853173 429 main/binary-i386/Packages
+ dbe463c0e33a9efb08f339f817de920fda1ba4dd5a07cdb343b028c52bdd55f9 334 main/binary-i386/Packages.gz
+ 00ac35de63b6bc9488f3877414ed81fbcb1501f2a24b065a774e6c0116e80e38 122 main/binary-i386/Release
+ d7d364f072e46221500cab4ae03fee471e4dea6c091bfa67e2d84a3d82853173 429 main/binary-amd64/Packages
+ dbe463c0e33a9efb08f339f817de920fda1ba4dd5a07cdb343b028c52bdd55f9 334 main/binary-amd64/Packages.gz
+ 33d43e856bd3b5f12c5d19e51b0be53d6a281c68ae99bef133516c8250fbce0e 123 main/binary-amd64/Release
+ d7d364f072e46221500cab4ae03fee471e4dea6c091bfa67e2d84a3d82853173 429 main/binary-armhf/Packages
+ dbe463c0e33a9efb08f339f817de920fda1ba4dd5a07cdb343b028c52bdd55f9 334 main/binary-armhf/Packages.gz
+ c1ac1df43cb5c72fb521a13c727adbd6fa7d42b2e74f1b9c9d41ffd6947e79a8 123 main/binary-armhf/Release
+ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 0 non-free/binary-i386/Packages
+ 59869db34853933b239f1e2219cf7d431da006aa919635478511fabbfc8849d2 20 non-free/binary-i386/Packages.gz
+ 701bc13921e5ed7d785f721dfc3db92976647896e5afb0e68913cc8a3b6d74c7 126 non-free/binary-i386/Release
+ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 0 non-free/binary-amd64/Packages
+ 59869db34853933b239f1e2219cf7d431da006aa919635478511fabbfc8849d2 20 non-free/binary-amd64/Packages.gz
+ 2be276cda16c25c3c394734146e48a0ed4d25d20a329a6bfeda6f00f9ecee52b 127 non-free/binary-amd64/Release
+ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 0 non-free/binary-armhf/Packages
+ 59869db34853933b239f1e2219cf7d431da006aa919635478511fabbfc8849d2 20 non-free/binary-armhf/Packages.gz
+ 75eb7e266b8564dcd604839483bab7e5152cffc71259e179c646b9db3b9e7b67 127 non-free/binary-armhf/Release

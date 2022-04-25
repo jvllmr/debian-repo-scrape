@@ -31,7 +31,9 @@ def apache_navigator(repo_url: str):
 
 @fixture()
 def predefined_navigator(repo_url: str):
-    return PredefinedSuitesNavigator(repo_url, ["mx"], ["public_key.asc"])
+    return PredefinedSuitesNavigator(
+        repo_url, ["mx", "focal/stable"], ["public_key.asc"]
+    )
 
 
 @fixture(

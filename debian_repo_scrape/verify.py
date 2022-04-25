@@ -20,6 +20,7 @@ from debian_repo_scrape.utils import (
     _get_file_abs,
     _get_release_file,
     get_release_file,
+    get_suites,
 )
 
 HASH_FUNCTION_MAP: list[tuple[str, t.Callable[[bytes], t.Any], HashInvalid]] = [
@@ -33,10 +34,7 @@ def verify_release_signatures(repoURL: str | BaseNavigator, pub_key_file: str):
 
     navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
     pgp_key, _ = PGPKey.from_file(pub_key_file)
-    navigator["dists"]
-    for suite in navigator.directions:
-        if suite == "..":
-            continue
+    for suite in get_suites(navigator):
 
         release_file = _get_release_file(navigator.base_url, suite)
 
@@ -51,11 +49,10 @@ def verify_release_signatures(repoURL: str | BaseNavigator, pub_key_file: str):
 def verify_hash_sums(repoURL: str | BaseNavigator):
     navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
     navigator["dists"]
-    for suite in navigator.directions:
-        if suite == "..":
-            continue
-
+    for suite in get_suites(navigator):
+        print(suite)
         release_file = get_release_file(navigator.base_url, suite)
+        navigator.set_checkpoint()
         navigator[suite]
         for key, hash_method, exc in HASH_FUNCTION_MAP:
             for file in release_file[key]:
@@ -81,9 +78,7 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
                             hashsum = hash_method_2(deb_file_content).hexdigest()
                             if not hashsum == packages_file[key_2.lower()]:
                                 raise exc_2(deb_file_url)
-
-        navigator[".."]
-
+        navigator.use_checkpoint()
     navigator.reset()
 
 

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from urllib.parse import urljoin
 
 from debian_repo_scrape.navigation import ApacheBrowseNavigator, BaseNavigator
-from debian_repo_scrape.utils import get_packages_files, get_release_file
+from debian_repo_scrape.utils import get_packages_files, get_release_file, get_suites
 from debian_repo_scrape.verify import verify_hash_sums, verify_release_signatures
 
 log = logging.getLogger(__name__)
@@ -77,9 +77,7 @@ def scrape_repo(
 
     navigator["dists"]
     suites: list[Suite] = []
-    for suite in navigator.directions:
-        if suite == "..":
-            continue
+    for suite in get_suites(navigator):
 
         release_file = get_release_file(navigator.base_url, suite)
         components: list[Component] = []
