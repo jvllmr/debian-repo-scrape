@@ -116,7 +116,7 @@ def scrape_repo(
                 name=suite,
                 url=urljoin(navigator.base_url, f"{suite}"),
                 components=components,
-                architectures=release_file["architectures"],
+                architectures=release_file["architectures"].split(),
                 date=release_file["date"],
             )
         )
