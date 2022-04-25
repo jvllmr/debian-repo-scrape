@@ -4,7 +4,6 @@ import hashlib
 import typing as t
 from urllib.parse import urljoin
 
-import requests
 from debian.deb822 import Packages
 from pgpy import PGPKey, PGPSignature
 
@@ -16,7 +15,12 @@ from debian_repo_scrape.exc import (
     SHA256Invalid,
 )
 from debian_repo_scrape.navigation import ApacheBrowseNavigator, BaseNavigator
-from debian_repo_scrape.utils import _get_file, _get_release_file, get_release_file
+from debian_repo_scrape.utils import (
+    _get_file,
+    _get_file_abs,
+    _get_release_file,
+    get_release_file,
+)
 
 HASH_FUNCTION_MAP: list[tuple[str, t.Callable[[bytes], t.Any], HashInvalid]] = [
     ("MD5Sum", hashlib.md5, MD5SumInvalid),
@@ -44,20 +48,6 @@ def verify_release_signatures(repoURL: str | BaseNavigator, pub_key_file: str):
     navigator.reset()
 
 
-def _verify_file_hash(
-    url: str, expected: str, method: t.Callable, exc: t.Type[HashInvalid] = HashInvalid
-):
-    resp = requests.get(url, stream=True)
-    if resp.status_code != 200:
-        raise FileRequestError(url, resp.status_code)
-
-    hashsum = method(resp.content).hexdigest()
-    if not hashsum == expected:
-        raise exc(url)
-
-    return resp.content
-
-
 def verify_hash_sums(repoURL: str | BaseNavigator):
     navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
     navigator["dists"]
@@ -71,12 +61,14 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
             for file in release_file[key]:
                 file_url = urljoin(navigator.current_url, file["name"])
                 try:
-                    file_content = _verify_file_hash(
-                        file_url, file[key.lower()], hash_method, exc
-                    )
+                    file_content = _get_file_abs(file_url)
+                    hashsum = hash_method(file_content).hexdigest()
+                    if not hashsum == file[key.lower()]:
+                        raise exc(file_url)
                 except FileRequestError:
                     if file_url.endswith("Packages"):
                         raise
+
                 if file_url.endswith("Packages"):
                     packages_file = Packages(file_content.split(b"\n"))
                     if packages_file.keys():
@@ -84,9 +76,12 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
                             deb_file_url = urljoin(
                                 navigator.base_url, packages_file["Filename"]
                             )
-                            _verify_file_hash(
-                                deb_file_url, packages_file[key_2], hash_method_2, exc_2
-                            )
+                            deb_file_content = _get_file_abs(deb_file_url)
+
+                            hashsum = hash_method_2(deb_file_content).hexdigest()
+                            if not hashsum == packages_file[key_2.lower()]:
+                                raise exc_2(deb_file_url)
+
         navigator[".."]
 
     navigator.reset()

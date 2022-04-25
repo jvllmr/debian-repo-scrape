@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 from urllib.parse import urljoin
 
 import requests
@@ -8,14 +9,24 @@ from debian.deb822 import Packages, Release
 from debian_repo_scrape.exc import FileRequestError
 
 
+@functools.cache
+def _get_response(url: str):
+    return requests.get(url, allow_redirects=True)
+
+
+def _get_file_abs(url: str):
+    resp = _get_response(url)
+    if resp.status_code != 200:
+        raise FileRequestError(url, resp.status_code)
+    return resp.content
+
+
 def _get_file(base_url: str, rel_path: str) -> bytes:
     if not base_url.endswith("/"):
         base_url += "/"
     url = urljoin(base_url, rel_path)
-    resp = requests.get(url)
-    if resp.status_code != 200:
-        raise FileRequestError(url, resp.status_code)
-    return resp.content
+
+    return _get_file_abs(url)
 
 
 def _get_release_file(repoURL: str, suite: str):

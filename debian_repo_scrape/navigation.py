@@ -9,6 +9,8 @@ import requests
 from bs4 import BeautifulSoup
 from debian.deb822 import Packages, Release
 
+from debian_repo_scrape.utils import _get_response
+
 
 class BaseNavigator(metaclass=ABCMeta):
     """
@@ -57,7 +59,7 @@ class BaseNavigator(metaclass=ABCMeta):
         else:
             new_url = urljoin(curr_url, item)
 
-        self._last_response = requests.get(new_url, allow_redirects=True)
+        self._last_response = _get_response(new_url)
         self._current_url = new_url
         self._refresh_soup()
         return self
