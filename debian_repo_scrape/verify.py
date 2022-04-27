@@ -30,9 +30,11 @@ HASH_FUNCTION_MAP: list[tuple[str, str, t.Type[HashInvalid]]] = [
 ]
 
 
-def verify_release_signatures(repoURL: str | BaseNavigator, pub_key_file: str):
+def verify_release_signatures(repo_url: str | BaseNavigator, pub_key_file: str):
 
-    navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
+    navigator = (
+        ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
+    )
     pgp_key, _ = PGPKey.from_file(pub_key_file)
     for suite in get_suites(navigator):
 
@@ -46,8 +48,10 @@ def verify_release_signatures(repoURL: str | BaseNavigator, pub_key_file: str):
     navigator.reset()
 
 
-def verify_hash_sums(repoURL: str | BaseNavigator):
-    navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
+def verify_hash_sums(repo_url: str | BaseNavigator):
+    navigator = (
+        ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
+    )
     navigator["dists"]
     for suite in get_suites(navigator):
         release_file = get_release_file(navigator.base_url, suite)
@@ -85,7 +89,9 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
     navigator.reset()
 
 
-def verify_repo_integrity(repoURL: str | BaseNavigator, pub_key_file: str):
-    navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
+def verify_repo_integrity(repo_url: str | BaseNavigator, pub_key_file: str):
+    navigator = (
+        ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
+    )
     verify_release_signatures(navigator, pub_key_file)
     verify_hash_sums(navigator)

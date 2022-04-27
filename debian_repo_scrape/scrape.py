@@ -59,9 +59,11 @@ class Package:
 
 
 def scrape_repo(
-    repoURL: str | BaseNavigator, verify: bool = True, pub_key_file: str | None = None
+    repo_url: str | BaseNavigator, verify: bool = True, pub_key_file: str | None = None
 ) -> Repository:
-    navigator = ApacheBrowseNavigator(repoURL) if isinstance(repoURL, str) else repoURL
+    navigator = (
+        ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
+    )
 
     if verify:
         verify_hash_sums(navigator)

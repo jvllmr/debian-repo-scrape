@@ -35,18 +35,18 @@ def _get_file(base_url: str, rel_path: str) -> bytes:
     return _get_file_abs(url)
 
 
-def _get_release_file(repoURL: str, suite: str):
-    return _get_file(repoURL, f"dists/{suite}/Release")
+def _get_release_file(repo_url: str, suite: str):
+    return _get_file(repo_url, f"dists/{suite}/Release")
 
 
-def get_release_file(repoURL: str, suite: str):
-    return Release(_get_release_file(repoURL, suite).split(b"\n"))
+def get_release_file(repo_url: str, suite: str):
+    return Release(_get_release_file(repo_url, suite).split(b"\n"))
 
 
-def _get_packages_files(repoURL: str, suite: str) -> dict[str, list[bytes]]:
-    if not repoURL.endswith("/"):
-        repoURL += "/"
-    release_file = get_release_file(repoURL, suite)
+def _get_packages_files(repo_url: str, suite: str) -> dict[str, list[bytes]]:
+    if not repo_url.endswith("/"):
+        repo_url += "/"
+    release_file = get_release_file(repo_url, suite)
     packages = {}
     for key in ("SHA256", "SHA1", "MD5Sum"):
         val = release_file.get(key, None)
@@ -58,7 +58,7 @@ def _get_packages_files(repoURL: str, suite: str) -> dict[str, list[bytes]]:
                     continue
                 component_name = filename.split("/")[0]
                 comp_packages = packages.get(component_name, None)
-                packages_file = _get_file(repoURL, f"dists/{suite}/{filename}")
+                packages_file = _get_file(repo_url, f"dists/{suite}/{filename}")
                 if not packages_file:
                     continue
                 if comp_packages is not None:
@@ -70,10 +70,10 @@ def _get_packages_files(repoURL: str, suite: str) -> dict[str, list[bytes]]:
     return packages
 
 
-def get_packages_files(repoURL: str, suite: str) -> dict[str, list[Packages]]:
+def get_packages_files(repo_url: str, suite: str) -> dict[str, list[Packages]]:
     return {
         component: [Packages(p.split(b"\n")) for p in ps]
-        for component, ps in _get_packages_files(repoURL, suite).items()
+        for component, ps in _get_packages_files(repo_url, suite).items()
     }
 
 
