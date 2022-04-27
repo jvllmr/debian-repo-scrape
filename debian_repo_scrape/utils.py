@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 import requests
 from debian.deb822 import Packages, Release
 
-from debian_repo_scrape.exc import FileRequestError
+from debian_repo_scrape.exc import FileRequestError, NoDistsPath
 
 if t.TYPE_CHECKING:
     from debian_repo_scrape.navigation import BaseNavigator
@@ -18,7 +18,7 @@ def _get_response(url: str):
     return requests.get(url, allow_redirects=True)
 
 
-def _get_file_abs(url: str):
+def _get_file_abs(url: str, ):
     resp = _get_response(url)
     if resp.status_code != 200:
         raise FileRequestError(url, resp.status_code)
@@ -95,8 +95,12 @@ def __get_suites(navigator: BaseNavigator) -> list[str]:
 def get_suites(navigator: BaseNavigator) -> list[str]:
     navigator.set_checkpoint()
     navigator.reset()
-    navigator["dists"]
 
+    try:
+        navigator["dists"]
+    except ValueError:
+        raise NoDistsPath()
+    
     suites = __get_suites(navigator)
 
     navigator.use_checkpoint()

@@ -61,7 +61,7 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
                     file_content = _get_file_abs(file_url)
                     hashsum = hashlib.new(hash_method, file_content).hexdigest()
                     if not hashsum == file[key.lower()]:
-                        raise exc(file_url)
+                        raise exc(file_url, urljoin(navigator.base_url, f"{suite}/Release"))
                 except FileRequestError:
                     if file_url.endswith("Packages"):
                         raise
@@ -77,7 +77,7 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
 
                             hashsum = hashlib.new(hash_method_2,deb_file_content).hexdigest()
                             if not hashsum == packages_file[key_2.lower()]:
-                                raise exc_2(deb_file_url)
+                                raise exc_2(deb_file_url, file_url)
         navigator.use_checkpoint()
     navigator.reset()
 
