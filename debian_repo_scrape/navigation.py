@@ -98,8 +98,11 @@ class BaseNavigator(metaclass=ABCMeta):
         directions = {
             d if "/" not in d else d.split("/")[0] for d in self._parse_directions()
         }
-        if self.current_url.strip("/").count("/") > 2 and ".." not in directions:
+
+        if self.current_url.strip("/").count("/") > 2:
             directions.add("..")
+        elif ".." in directions:
+            directions.remove("..")
         return directions
 
     @property
