@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 from debian.deb822 import Packages
 from pgpy import PGPKey, PGPSignature
 
+
 from debian_repo_scrape.exc import (
     FileRequestError,
     HashInvalid,
@@ -23,10 +24,10 @@ from debian_repo_scrape.utils import (
     get_suites,
 )
 
-HASH_FUNCTION_MAP: list[tuple[str, t.Callable[[bytes], t.Any], HashInvalid]] = [
-    ("MD5Sum", hashlib.md5, MD5SumInvalid),
-    ("SHA1", hashlib.sha1, SHA1Invalid),
-    ("SHA256", hashlib.sha256, SHA256Invalid),
+HASH_FUNCTION_MAP: list[tuple[str, str, t.Type[HashInvalid]]] = [
+    ("MD5Sum", "md5", MD5SumInvalid),
+    ("SHA1", "sha1", SHA1Invalid),
+    ("SHA256", "sha256", SHA256Invalid),
 ]
 
 
@@ -58,7 +59,7 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
                 file_url = urljoin(navigator.current_url, file["name"])
                 try:
                     file_content = _get_file_abs(file_url)
-                    hashsum = hash_method(file_content).hexdigest()
+                    hashsum = hashlib.new(hash_method, file_content).hexdigest()
                     if not hashsum == file[key.lower()]:
                         raise exc(file_url)
                 except FileRequestError:
@@ -74,7 +75,7 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
                             )
                             deb_file_content = _get_file_abs(deb_file_url)
 
-                            hashsum = hash_method_2(deb_file_content).hexdigest()
+                            hashsum = hashlib.new(hash_method_2,deb_file_content).hexdigest()
                             if not hashsum == packages_file[key_2.lower()]:
                                 raise exc_2(deb_file_url)
         navigator.use_checkpoint()
