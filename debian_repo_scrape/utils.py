@@ -18,7 +18,9 @@ def _get_response(url: str):
     return requests.get(url, allow_redirects=True)
 
 
-def _get_file_abs(url: str, ):
+def _get_file_abs(
+    url: str,
+):
     resp = _get_response(url)
     if resp.status_code != 200:
         raise FileRequestError(url, resp.status_code)
@@ -100,7 +102,7 @@ def get_suites(navigator: BaseNavigator) -> list[str]:
         navigator["dists"]
     except ValueError:
         raise NoDistsPath()
-    
+
     suites = __get_suites(navigator)
 
     navigator.use_checkpoint()

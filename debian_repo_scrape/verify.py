@@ -7,7 +7,6 @@ from urllib.parse import urljoin
 from debian.deb822 import Packages
 from pgpy import PGPKey, PGPSignature
 
-
 from debian_repo_scrape.exc import (
     FileRequestError,
     HashInvalid,
@@ -61,7 +60,9 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
                     file_content = _get_file_abs(file_url)
                     hashsum = hashlib.new(hash_method, file_content).hexdigest()
                     if not hashsum == file[key.lower()]:
-                        raise exc(file_url, urljoin(navigator.base_url, f"{suite}/Release"))
+                        raise exc(
+                            file_url, urljoin(navigator.base_url, f"{suite}/Release")
+                        )
                 except FileRequestError:
                     if file_url.endswith("Packages"):
                         raise
@@ -75,7 +76,9 @@ def verify_hash_sums(repoURL: str | BaseNavigator):
                             )
                             deb_file_content = _get_file_abs(deb_file_url)
 
-                            hashsum = hashlib.new(hash_method_2,deb_file_content).hexdigest()
+                            hashsum = hashlib.new(
+                                hash_method_2, deb_file_content
+                            ).hexdigest()
                             if not hashsum == packages_file[key_2.lower()]:
                                 raise exc_2(deb_file_url, file_url)
         navigator.use_checkpoint()
