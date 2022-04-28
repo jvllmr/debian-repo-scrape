@@ -4,9 +4,15 @@ import logging
 from dataclasses import dataclass
 from urllib.parse import urljoin
 
+import typing_extensions as te
+
 from debian_repo_scrape.navigation import ApacheBrowseNavigator, BaseNavigator
 from debian_repo_scrape.utils import get_packages_files, get_release_file, get_suites
-from debian_repo_scrape.verify import verify_hash_sums, verify_release_signatures
+from debian_repo_scrape.verify import (
+    VerificationModes,
+    verify_hash_sums,
+    verify_release_signatures,
+)
 
 log = logging.getLogger(__name__)
 
@@ -59,18 +65,20 @@ class Package:
 
 
 def scrape_repo(
-    repo_url: str | BaseNavigator, verify: bool = True, pub_key_file: str | None = None
+    repo_url: str | BaseNavigator,
+    verify: VerificationModes | str | te.Literal[False] = VerificationModes.STRICT,
+    pub_key_file: str | None = None,
 ) -> Repository:
     navigator = (
         ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
     )
 
     if verify:
-        verify_hash_sums(navigator)
+        verify_hash_sums(navigator, verify)
         if pub_key_file is None:
             log.warning(
                 """
-                Verfying debian repsotiry integrity, but no public key was given.
+                Verifying debian repository integrity, but no public key was given.
                 As a result the release signatures will not be verified.
                 """
             )

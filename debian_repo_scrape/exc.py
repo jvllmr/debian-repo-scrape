@@ -1,4 +1,3 @@
-# pragma: nocover
 from __future__ import annotations
 
 
@@ -33,23 +32,22 @@ class FileRequestError(FileError):
 
 
 class HashInvalid(FileError):
+    hash_type = "Hash"
+
     def __init__(self, file: str, file_mentioned_by: str, *args) -> None:
-        super().__init__(file, file_mentioned_by, *args)
+        super().__init__(file, file_mentioned_by, *args)  # pragma: no cover
 
     def __str__(self) -> str:
-        return f"Hash of {self.file} mentioned in {self.file_mentioned_by} is invalid"
+        return f"{self.hash_type} of {self.file} mentioned in {self.file_mentioned_by} is invalid"
 
 
 class MD5SumInvalid(HashInvalid):
-    def __str__(self) -> str:
-        return f"MD5Sum of {self.file} mentioned in {self.file_mentioned_by} is invalid"
+    hash_type = "MD5Sum"
 
 
 class SHA1Invalid(HashInvalid):
-    def __str__(self) -> str:
-        return f"SHA1 of {self.file} mentioned in {self.file_mentioned_by} is invalid"
+    hash_type = "SHA1"
 
 
 class SHA256Invalid(HashInvalid):
-    def __str__(self) -> str:
-        return f"SHA256 of {self.file} mentioned in {self.file_mentioned_by} is invalid"
+    hash_type = "SHA256"

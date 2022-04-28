@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import functools
+import logging
+import re
 import typing as t
 from urllib.parse import urljoin
 
@@ -12,7 +14,7 @@ from debian_repo_scrape.exc import FileRequestError, NoDistsPath
 if t.TYPE_CHECKING:
     from debian_repo_scrape.navigation import BaseNavigator
 
-_F = t.TypeVar("_F", bound=t.Callable[..., t.Any])
+log = logging.getLogger(__name__)
 
 
 @functools.lru_cache(None)
@@ -86,16 +88,22 @@ def get_packages_files(repo_url: str, suite: str) -> dict[str, list[Packages]]:
 def __get_suites(navigator: BaseNavigator) -> list[str]:
     suites: list[str] = []
     for suite in navigator.directions:
+
         if suite == "..":
             continue
+
+        if re.match(r"binary-.+|sources", suite):
+            log.warning(
+                f'Searching for suites lead to "{suite}" directory. If the folder is not part of a suite name, this means that the Release file for that suite is missing.'  # noqa: E501
+            )
+        navigator.set_checkpoint()
         navigator[suite]
         if "Release" not in navigator.directions:
-            for subsuite in __get_suites(navigator):
-                suites.append(f"{suite}/{subsuite}")
+            suites.extend(f"{suite}/{subsuite}" for subsuite in __get_suites(navigator))
         else:
             suites.append(suite)
 
-        navigator[".."]
+        navigator.use_checkpoint()
 
     return suites
 
