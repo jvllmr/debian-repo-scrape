@@ -57,7 +57,9 @@ profile = "black"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--live-server-port 5000"
+addopts = "--live-server-port 5000 --cov --cov-report=html --cov-report=xml"
+
+
 
 [tool.tox]
 legacy_tox_ini = """

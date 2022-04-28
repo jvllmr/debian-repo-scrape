@@ -1,0 +1,13 @@
+[run]
+source = debian_repo_scrape
+omit = debian_repo_scrape/exc.py, tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __str__
+    def __repr__
+    @(abc\.)?abstractmethod
+
+[html]
+directory = coverage
