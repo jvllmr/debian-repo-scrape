@@ -1,10 +1,4 @@
 repos:
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
-    rev: v1.2.4
-    hooks:
-      - id: python-safety-dependencies-check
-        files: pyproject.toml
-        additional_dependencies: [poetry]
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.32.0
     hooks:
@@ -37,6 +31,7 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [types-requests, types-beautifulsoup4]
+        exclude: "^tests/.*"
   - repo: local
     hooks:
       - id: pytest-cov
