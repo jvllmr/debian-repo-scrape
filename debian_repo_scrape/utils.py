@@ -12,10 +12,16 @@ from debian_repo_scrape.exc import FileRequestError, NoDistsPath
 if t.TYPE_CHECKING:
     from debian_repo_scrape.navigation import BaseNavigator
 
+_F = t.TypeVar("_F", bound=t.Callable[..., t.Any])
+
 
 @functools.lru_cache(None)
 def _get_response(url: str):
     return requests.get(url, allow_redirects=True)
+
+
+def clear_response_cache():
+    return _get_response.cache_clear()
 
 
 def _get_file_abs(
@@ -100,7 +106,7 @@ def get_suites(navigator: BaseNavigator) -> list[str]:
 
     try:
         navigator["dists"]
-    except ValueError:
+    except ValueError:  # pragma: no cover
         raise NoDistsPath()
 
     suites = __get_suites(navigator)

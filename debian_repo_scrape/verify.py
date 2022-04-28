@@ -52,6 +52,8 @@ def verify_hash_sums(repo_url: str | BaseNavigator):
     navigator = (
         ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
     )
+    navigator.set_checkpoint()
+    navigator.reset()
     navigator["dists"]
     for suite in get_suites(navigator):
         release_file = get_release_file(navigator.base_url, suite)
@@ -86,7 +88,7 @@ def verify_hash_sums(repo_url: str | BaseNavigator):
                             if not hashsum == packages_file[key_2.lower()]:
                                 raise exc_2(deb_file_url, file_url)
         navigator.use_checkpoint()
-    navigator.reset()
+    navigator.use_checkpoint()
 
 
 def verify_repo_integrity(repo_url: str | BaseNavigator, pub_key_file: str):

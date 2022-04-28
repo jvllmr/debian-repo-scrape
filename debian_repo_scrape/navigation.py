@@ -5,7 +5,6 @@ from abc import ABCMeta, abstractmethod
 from urllib.parse import urljoin
 
 import bs4.element
-import requests
 from bs4 import BeautifulSoup
 from debian.deb822 import Packages, Release
 
@@ -38,24 +37,22 @@ class BaseNavigator(metaclass=ABCMeta):
 
     def navigate(self, item: str):
         """Navigate to the specified item"""
-        item = item.strip("/")
+
         curr_url = self.current_url
 
         if not isinstance(item, str):
             raise TypeError("Requested item must be a string")
-        elif "/" in item:
+
+        item = item.strip("/")
+
+        if "/" in item:
             for subitem in item.split("/"):
                 self.navigate(subitem)
-                if curr_url == self.current_url:
-                    return self
             return self
         elif item not in self.directions:
             raise ValueError(
                 f"{item} is not a valid item for navigation. URL: {self.current_url}"
             )
-
-        if not curr_url.endswith("/"):
-            curr_url += "/"
 
         if item == "..":
             new_url = curr_url[: curr_url.strip("/").rindex("/") + 1]
@@ -115,7 +112,7 @@ class BaseNavigator(metaclass=ABCMeta):
     def url_checkpoint_diff(self):
 
         if not self.checkpoints:
-            raise ValueError("No checkpoint has been set.")
+            raise ValueError("No checkpoint is available.")
         return self.checkpoints[-1]
 
     @property
@@ -185,18 +182,18 @@ class PredefinedSuitesNavigator(BaseNavigator):
             release_sig_path = "/".join(["dists", suite, "Release.gpg"])
             self._paths.append(release_sig_path)
             suite_release_url = urljoin(base_url, release_path)
-            resp = requests.get(suite_release_url)
+            resp = _get_response(suite_release_url)
             if resp.status_code != 200:
-                continue
+                continue  # pragma: no cover
             release_file = Release(resp.content.split(b"\n"))
             for file in release_file["SHA256"]:
                 filename: str = file["name"]
                 self._paths.append(f"dists/{suite}/{filename}")
                 if filename.endswith("Packages"):
                     packages_url = urljoin(suite_release_url.strip("Release"), filename)
-                    resp = requests.get(packages_url)
+                    resp = _get_response(packages_url)
                     if resp.status_code != 200:
-                        continue
+                        continue  # pragma: no cover
                     packages_file = Packages(resp.content.split(b"\n"))
                     if "Filename" in packages_file:
                         self._paths.append(packages_file["Filename"])

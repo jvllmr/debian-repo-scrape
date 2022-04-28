@@ -8,6 +8,7 @@ exclude_lines =
     def __str__
     def __repr__
     @(abc\.)?abstractmethod
+    if (t\.)?TYPE_CHECKING
 
 [html]
 directory = coverage

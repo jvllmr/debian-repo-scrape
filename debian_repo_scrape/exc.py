@@ -1,3 +1,4 @@
+# pragma: nocover
 from __future__ import annotations
 
 

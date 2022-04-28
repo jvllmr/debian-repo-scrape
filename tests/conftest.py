@@ -7,6 +7,12 @@ from debian_repo_scrape.navigation import (
     ApacheBrowseNavigator,
     PredefinedSuitesNavigator,
 )
+from debian_repo_scrape.utils import clear_response_cache
+
+
+@fixture(autouse=True)
+def clear_cache():
+    clear_response_cache()
 
 
 @fixture(scope="session")
@@ -26,13 +32,13 @@ def repo_url():
 
 @fixture()
 def apache_navigator(repo_url: str):
-    return ApacheBrowseNavigator(repo_url)
+    return ApacheBrowseNavigator(repo_url.strip("/"))
 
 
 @fixture()
 def predefined_navigator(repo_url: str):
     return PredefinedSuitesNavigator(
-        repo_url, ["mx", "focal/stable"], ["public_key.asc"]
+        repo_url.strip("/"), ["mx", "focal/stable"], ["public_key.asc", "forbidden"]
     )
 
 

@@ -11,7 +11,7 @@ def test_server_active(repo_url: str):
     assert resp.status_code == 200
 
 
-def test_scrape_test_repo(navigator):
+def test_scrape_test_repo(navigator, caplog):
     repo = scrape_repo(navigator, pub_key_file="tests/public_key.gpg")
     assert repo.packages
     for package in repo.packages:
@@ -21,6 +21,13 @@ def test_scrape_test_repo(navigator):
     for suite in repo.suites:
         assert suite.components
         assert len(suite.components) == 1
+
+
+def test_scrape_without_pubkey(navigator, caplog):
+    scrape_repo(navigator)
+    scrape_repo(navigator, verify=False)
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "WARNING"
 
 
 skip_long = not os.getenv("PYTEST_LONGTESTS", "")

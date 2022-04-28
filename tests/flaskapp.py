@@ -25,6 +25,8 @@ def create_app():
     @app.get("/debian/<path:path>")
     def get_thingy(path: str):
         requested_thingy = os.path.join(os.path.dirname(__file__), "repo", path)
+        if path == "forbidden":
+            abort(403)
         if os.path.basename(requested_thingy) in (
             "InRelease",
             "Release",

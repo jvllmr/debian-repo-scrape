@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+import pytest
+
 from debian_repo_scrape.navigation import BaseNavigator
 
 
@@ -15,6 +19,14 @@ def test_navigation(navigator: BaseNavigator, repo_url: str):
     navigator[".."][".."]
     navigator["dists/focal/stable"]
     assert navigator.current_url == f"{repo_url}dists/focal/stable/"
+    navigator.reset()
+    navigator["forbidden"]
+    assert navigator.current_url == navigator.base_url
+    with pytest.raises(ValueError):
+        navigator["ehrguerzzuge"]
+
+    with pytest.raises(TypeError):
+        navigator[0]
 
 
 def test_fast_navigation(navigator: BaseNavigator):
@@ -41,6 +53,20 @@ def test_checkpoints(navigator: BaseNavigator):
     navigator.use_checkpoint()
     assert navigator.current_url.endswith("/dists/")
     navigator.reset()
+    navigator["dists"]
+    navigator.set_checkpoint()
+    navigator["focal"]
+    navigator.set_checkpoint()
+    navigator["stable"]
+    navigator.set_checkpoint()
+    navigator["Release"]
+    navigator.use_checkpoint()
+    assert navigator.current_url.endswith("focal/stable/")
+    navigator.use_checkpoint()
+    assert navigator.current_url.endswith("dists/focal/")
+    navigator.clear_checkpoints()
+    with pytest.raises(ValueError):
+        navigator.use_checkpoint()
 
 
 def test_directions(navigator: BaseNavigator):

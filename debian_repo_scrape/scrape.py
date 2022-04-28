@@ -76,7 +76,8 @@ def scrape_repo(
             )
         else:
             verify_release_signatures(navigator, pub_key_file)
-
+    navigator.set_checkpoint()
+    navigator.reset()
     navigator["dists"]
     suites: list[Suite] = []
     for suite in get_suites(navigator):
@@ -119,5 +120,5 @@ def scrape_repo(
                 date=release_file["date"],
             )
         )
-    navigator.reset()
+    navigator.use_checkpoint()
     return Repository(url=navigator.base_url, suites=suites)
