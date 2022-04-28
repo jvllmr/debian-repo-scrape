@@ -46,6 +46,11 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
 files = ["debian_repo_scrape"]
+python_version = "3.7"
+
+[[tool.mypy.overrides]]
+module = 'pgpy'
+ignore_missing_imports = "True"
 
 [tool.isort]
 profile = "black"

@@ -47,7 +47,7 @@ def _get_packages_files(repo_url: str, suite: str) -> dict[str, list[bytes]]:
     if not repo_url.endswith("/"):
         repo_url += "/"
     release_file = get_release_file(repo_url, suite)
-    packages = {}
+    packages: dict[str, list[bytes]] = {}
     for key in ("SHA256", "SHA1", "MD5Sum"):
         val = release_file.get(key, None)
         if val:
