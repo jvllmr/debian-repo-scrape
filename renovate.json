@@ -2,6 +2,6 @@
   "extends": [
     "config:base"
   ],
-  "rangeStrategy": "update-lockfile"
+  "rangeStrategy": "widen"
 
 }
