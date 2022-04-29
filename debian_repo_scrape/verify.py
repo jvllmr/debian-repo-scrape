@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import bz2
 import gzip
 import hashlib
 import logging
+import lzma
 import os
 import re
 import typing as t
@@ -36,8 +38,8 @@ HASH_FUNCTION_MAP: list[tuple[str, str, t.Type[HashInvalid]]] = [
     ("SHA1", "sha1", SHA1Invalid),
     ("SHA256", "sha256", SHA256Invalid),
 ]
-
-IMPORTANT_FILES_REGEX = (r"Packages", r".+\.deb", r"Packages.gz", r"Sources.gz")
+PACKAGES_FILE_REGEX = r"Packages(\..+)?"
+IMPORTANT_FILES_REGEX = (PACKAGES_FILE_REGEX, r".+\.deb", r"Sources.gz")
 
 
 class VerificationModes(str, Enum):
@@ -148,14 +150,18 @@ def verify_hash_sums(
                     __check_reraise(mode, e)
                     if mode in IGNORE_MISSING:
                         continue
-
-                if (
-                    re.match(r"Packages|Packages.gz", os.path.basename(file_url))
-                    and file_url not in processed_urls
-                ):
+                packages_match = re.match(
+                    PACKAGES_FILE_REGEX, os.path.basename(file_url)
+                )
+                if packages_match and file_url not in processed_urls:
                     processed_urls.append(file_url)
-                    if file_url.endswith(".gz"):
+                    if packages_match.group(1) == ".gz":
                         file_content = gzip.decompress(file_content)
+                    elif packages_match.group(1) in (".xz", ".lzma"):
+                        file_content = lzma.decompress(file_content)  # pragma: no cover
+                    elif packages_match.group(1) == ".bz2":
+                        file_content = bz2.decompress(file_content)  # pragma: no cover
+
                     packages_file = Packages(file_content.split(b"\n"))
 
                     if packages_file.keys():

@@ -18,12 +18,17 @@ log = logging.getLogger(__name__)
 
 
 @functools.lru_cache(None)
-def _get_response(url: str):
+def __get_response(url: str):
     return requests.get(url, allow_redirects=True)
 
 
+def _get_response(url: str):
+
+    return __get_response(url.strip("/"))
+
+
 def clear_response_cache():
-    return _get_response.cache_clear()
+    return __get_response.cache_clear()
 
 
 def _get_file_abs(
@@ -52,8 +57,6 @@ def get_release_file(repo_url: str, suite: str):
 
 
 def _get_packages_files(repo_url: str, suite: str) -> dict[str, list[bytes]]:
-    if not repo_url.endswith("/"):
-        repo_url += "/"
     release_file = get_release_file(repo_url, suite)
     packages: dict[str, list[bytes]] = {}
     for key in ("SHA256", "SHA1", "MD5Sum"):
