@@ -5,6 +5,7 @@ Date: Sun, 03 Apr 2022 14:16:41 UTC
 Architectures: i386 amd64 armhf
 Components: main non-free
 Description: A repo for testing debian_repo_tools
+Acquire-By-Hash: yes
 MD5Sum:
  210907989282efb5fa884e167400bf13 429 main/binary-i386/Packages
  91a5e227be6e1f057d7edc0a2f7dee40 334 main/binary-i386/Packages.gz

@@ -8,6 +8,7 @@ Date: Sun, 03 Apr 2022 14:16:41 UTC
 Architectures: i386 amd64 armhf
 Components: main non-free
 Description: A repo for testing debian_repo_tools
+Acquire-By-Hash: yes
 MD5Sum:
  210907989282efb5fa884e167400bf13 429 main/binary-i386/Packages
  91a5e227be6e1f057d7edc0a2f7dee40 334 main/binary-i386/Packages.gz
@@ -67,15 +68,15 @@ SHA256:
  75eb7e266b8564dcd604839483bab7e5152cffc71259e179c646b9db3b9e7b67 127 non-free/binary-armhf/Release
 -----BEGIN PGP SIGNATURE-----
 
-iQGzBAEBCAAdFiEEOATM3FnttVybr8h1WnqgV9vD7WYFAmJJrFEACgkQWnqgV9vD
-7WZ/ZAv/QUygpgL0Lf0WDhOGnM4I3XPIuveWHbtY/TglBveFC6+kDMLdGsCbVcIF
-vphqqmAh5lfFKSRsZoaTtby3SQRmF6mUC+YEBbmD9LLCsI0WLps5t8gxGyCg0I86
-TpNKh8lcZwlvUuzHcEJrAtSUhDO/+3BEuJk9avsJxFhYXlV8RGkswWZCD+KqBnr3
-VMhTEjLmt1e9oVVqROxgAKVaarkE5cXFtuqm+eEA5bu47U8LYnZ/j35DX31Qd+kV
-lbGOl6fSm0LyOXJisg4l1cIJ+gxTgLV5CZgXgwhfcWAaQzh4PAH2VAL7F7Bd74FQ
-VfdHdeNHZC8p8wcU203TcsDBV3xB6O2F+HPvJaz9EeCXY/VklYLGlpPVd6B46VbA
-Za4JStGcW9tsRRLpIG/8NHZ+HVT58VOcS9291JaNLvZV3oqxbgidxvQem/R6t2sf
-j5H1rdSguZBuRme33ztD712TvM4Ieewh+SdhBWBc/xyLadLN+27HZcceTrEsWOBZ
-bv31AD0V
-=ZbGj
+iQGzBAEBCAAdFiEEOATM3FnttVybr8h1WnqgV9vD7WYFAmJsWVwACgkQWnqgV9vD
+7WZi7gwAjc6bEnXWgeQATXVSWsEWH9OUxCS/soayR4Nsk3lzE+yaYHfhVfndPAUf
+n/gujz3oU1bb2RL1xRZt7Yehn008B/pDyEhsKkKs6EpESwHiO6lnxFdzNCLgkBEd
+k272jW/birDAoKgqFRePWJtftniJ3ABgeizvnM9mDxDkopdGW17h3dt/WMFZoVtC
+pg2khvloRYXo56tE79DaVMBat0A6Hq4LDTMaG7fGCTFnbw75m14Z1zjPun4Eqa/h
+xu+zb+c0L3TfBDN5mKf4QrS0+QQ0VItUQbQVimKnJm3WGusJeJ+6WM7zWixr9DC5
+NZ9YIMLsMOZidR4gDnunOfrHVMdqdw/TMiQ7cblRcSvZPE+tk4jNAArRosteQZGD
+pehY45K1r69kmAwItuo2UaJEnR6bXrsMHUAVDiqzT/PnmB4GOBxnmjr1sSX8x3d6
+yU1QlKveHAu8ygrUX1iPg2cWa7VdUyrPM+iTMjFWnZknaI0zJo3JhxwA0p87jvEP
+saTEVPIk
+=vXHo
 -----END PGP SIGNATURE-----

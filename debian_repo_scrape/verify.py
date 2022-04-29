@@ -169,6 +169,12 @@ def verify_hash_sums(
                     __check_reraise(mode, e)
                     if mode in IGNORE_MISSING:
                         continue
+
+                if release_file.get("Acquire-by-Hash") == "yes":
+                    by_hash_url = urljoin(file_url, f"by-hash/{key}/{hashsum}")
+                    by_hash_file = _get_file_abs(by_hash_url)
+                    assert by_hash_file == file_content
+
                 packages_match = re.match(
                     PACKAGES_FILE_REGEX, os.path.basename(file_url)
                 )

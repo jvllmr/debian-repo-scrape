@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import hashlib
 import os
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 
 from flask import Flask, abort, render_template, send_file
+
+from debian_repo_scrape.verify import HASH_FUNCTION_MAP
 
 
 @dataclass
@@ -25,6 +29,23 @@ def create_app():
     @app.get("/debian/<path:path>")
     def get_thingy(path: str):
         requested_thingy = os.path.join(os.path.dirname(__file__), "repo", path)
+
+        if "by-hash" in path:
+            hash_ = os.path.basename(path)
+            hash_type = path.split("/")[-2].lower()
+
+            for name, arg, _ in HASH_FUNCTION_MAP:
+                if name.lower() == hash_type:
+                    for path in Path("tests/repo").rglob("*"):
+                        try:
+                            with open(path, "rb") as f:
+                                if hashlib.new(arg, f.read()).hexdigest() == hash_:
+                                    return send_file(
+                                        path, mimetype="application/octet-stream"
+                                    )
+                        except IsADirectoryError:
+                            continue
+
         if path == "forbidden":
             abort(403)
         if os.path.basename(requested_thingy) in (
