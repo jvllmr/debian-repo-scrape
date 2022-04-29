@@ -58,11 +58,13 @@ class Package:
     sha1: str
     md5: str
     description: str | None
-    maintainer: str
+    maintainer: str | None
     section: str | None
     priority: str | None
     date: str
     architecture: str
+    description_md5: str | None
+    phased_update_percentage: int | None
 
 
 def scrape_repo(
@@ -101,8 +103,10 @@ def scrape_repo(
                     sha1=p["sha1"],
                     md5=p["md5sum"],
                     priority=p.get("priority"),
-                    maintainer=p["maintainer"],
+                    maintainer=p.get("maintainer"),
                     description=p.get("description"),
+                    description_md5=p.get("description_md5"),
+                    phased_update_percentage=p.get("Phased-Update-Percentage"),
                 )
                 for p in packages
             ]
