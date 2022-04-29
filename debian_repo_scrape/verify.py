@@ -13,7 +13,7 @@ from io import BufferedReader
 from urllib.parse import urljoin
 
 from debian.deb822 import Packages
-from pgpy import PGPKey, PGPSignature
+from pgpy import PGPKey, PGPMessage, PGPSignature
 
 from debian_repo_scrape.exc import (
     FileError,
@@ -100,6 +100,11 @@ def verify_release_signatures(
         )
 
         pgp_key.verify(release_file, release_sig)
+
+        in_release_file = _get_file(navigator.base_url, f"dists/{suite}/InRelease")
+        pgp_message = PGPMessage.from_blob(in_release_file)
+        pgp_key.verify(pgp_message)
+
     navigator.use_checkpoint()
 
 
