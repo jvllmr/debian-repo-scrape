@@ -4,6 +4,7 @@ import pytest
 import requests
 
 from debian_repo_scrape.scrape import scrape_repo
+from debian_repo_scrape.verify import VerificationModes
 
 
 def test_server_active(repo_url: str):
@@ -53,6 +54,7 @@ def test_scrape_postgresql():
         scrape_repo(
             "https://ftp.postgresql.org/pub/repos/apt/",
             pub_key_file="temp_key_file.asc",
+            verify=VerificationModes.VERIFY_IMPORTANT_ONLY_IGNORE_MISSING,
         )
 
 
@@ -62,6 +64,7 @@ def test_scrape_spotify():
         scrape_repo(
             "https://repository-origin.spotify.com/",
             pub_key_file="temp_key_file.asc",
+            verify=VerificationModes.VERIFY_IMPORTANT_ONLY_IGNORE_MISSING,
         )
 
 
@@ -71,6 +74,7 @@ def test_scrape_nodesource():
         scrape_repo(
             "https://deb.nodesource.com/node_14.x/",
             pub_key_file="temp_key_file.asc",
+            verify=VerificationModes.VERIFY_IMPORTANT_ONLY_IGNORE_MISSING,
         )
 
 
@@ -80,4 +84,5 @@ def test_scrape_pgadmin4():
         scrape_repo(
             "https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/focal/",
             pub_key_file="temp_key_file.asc",
+            verify=VerificationModes.VERIFY_IMPORTANT_ONLY_IGNORE_MISSING,
         )

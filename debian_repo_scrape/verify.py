@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gzip
 import hashlib
 import logging
 import os
@@ -36,12 +37,34 @@ HASH_FUNCTION_MAP: list[tuple[str, str, t.Type[HashInvalid]]] = [
     ("SHA256", "sha256", SHA256Invalid),
 ]
 
-IMPORTANT_FILES = (r"Packages", r".+\.deb", r"Packages.gz")
+IMPORTANT_FILES_REGEX = (r"Packages", r".+\.deb", r"Packages.gz", r"Sources.gz")
 
 
 class VerificationModes(str, Enum):
     STRICT = "strict"
     RAISE_IMPORTANT_ONLY = "raise_important_only"
+    IGNORE_MISSING = "ignore_missing"
+    IGNORE_MISSING_NON_IMPORTANT = "ignore_missing_non_important"
+    VERIFY_IMPORTANT_ONLY = "verify_important_only"
+    VERIFY_IMPORTANT_ONLY_IGNORE_MISSING = "verify_important_only_ignore_missing"
+
+
+VERIFY_IMPORTANT_ONLY = (
+    VerificationModes.VERIFY_IMPORTANT_ONLY,
+    VerificationModes.VERIFY_IMPORTANT_ONLY_IGNORE_MISSING,
+)
+
+IGNORE_MISSING = (
+    VerificationModes.IGNORE_MISSING,
+    VerificationModes.IGNORE_MISSING_NON_IMPORTANT,
+    VerificationModes.VERIFY_IMPORTANT_ONLY_IGNORE_MISSING,
+)
+
+RAISE_EXCEPTION = (VerificationModes.STRICT, VerificationModes.VERIFY_IMPORTANT_ONLY)
+RAISE_EXCEPTION_IMPORTANT_FILE = (
+    VerificationModes.RAISE_IMPORTANT_ONLY,
+    VerificationModes.IGNORE_MISSING_NON_IMPORTANT,
+)
 
 
 def verify_release_signatures(repo_url: str | BaseNavigator, pub_key_file: str):
@@ -65,25 +88,24 @@ def verify_release_signatures(repo_url: str | BaseNavigator, pub_key_file: str):
 
 
 def __check_important(file: str) -> bool:
-    for pattern in IMPORTANT_FILES:
+    for pattern in IMPORTANT_FILES_REGEX:
         if re.match(pattern, os.path.basename(file)):
             return True
     return False
 
 
 def __check_reraise(mode: str, e: FileError):
-    if mode == VerificationModes.STRICT or (
-        mode == VerificationModes.RAISE_IMPORTANT_ONLY and __check_important(e.file)
+    if (
+        mode in RAISE_EXCEPTION
+        or (mode in RAISE_EXCEPTION_IMPORTANT_FILE and __check_important(e.file))
+        or (isinstance(e, HashInvalid) and mode in IGNORE_MISSING)
     ):
         raise e
-    elif isinstance(e, FileRequestError):
-        log.warning(
-            f"{e.file_mentioned_by} pointed to {e.file}, but it couldn't be requested - Status Code {e.status_code}"  # noqa: E501
-        )
-    elif isinstance(e, HashInvalid):
-        log.warning(
-            f"{e.hash_type} of {e.file} is invalid - File mentioned by: {e.file_mentioned_by}"
-        )
+
+    elif (
+        isinstance(e, FileRequestError) and mode not in IGNORE_MISSING
+    ) or not isinstance(e, FileRequestError):
+        log.warning(e)
 
 
 def verify_hash_sums(
@@ -98,6 +120,7 @@ def verify_hash_sums(
     navigator = (
         ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
     )
+    processed_urls: list[str] = []
     navigator.set_checkpoint()
     navigator.reset()
     navigator["dists"]
@@ -109,6 +132,10 @@ def verify_hash_sums(
         navigator[suite]
         for key, hash_method, exc in HASH_FUNCTION_MAP:
             hashed_files = release_file[key]
+            if mode in VERIFY_IMPORTANT_ONLY:
+                hashed_files = [
+                    file for file in hashed_files if __check_important(file["name"])
+                ]
             for file in hashed_files:
                 file_url = urljoin(navigator.current_url, file["name"])
                 try:
@@ -119,20 +146,34 @@ def verify_hash_sums(
                 except FileRequestError as e:
                     e.file_mentioned_by = release_file_url
                     __check_reraise(mode, e)
+                    if mode in IGNORE_MISSING:
+                        continue
 
-                if file_url.endswith("Packages"):
+                if (
+                    re.match(r"Packages|Packages.gz", os.path.basename(file_url))
+                    and file_url not in processed_urls
+                ):
+                    processed_urls.append(file_url)
+                    if file_url.endswith(".gz"):
+                        file_content = gzip.decompress(file_content)
                     packages_file = Packages(file_content.split(b"\n"))
+
                     if packages_file.keys():
+                        packages_file_fn = packages_file["Filename"]
+                        if mode in VERIFY_IMPORTANT_ONLY and not __check_important(
+                            packages_file_fn
+                        ):
+                            continue  # pragma: no cover
                         for key_2, hash_method_2, exc_2 in HASH_FUNCTION_MAP:
-                            deb_file_url = urljoin(
-                                navigator.base_url, packages_file["Filename"]
-                            )
+                            deb_file_url = urljoin(navigator.base_url, packages_file_fn)
 
                             try:
                                 deb_file_content = _get_file_abs(deb_file_url)
                             except FileRequestError as e:
                                 e.file_mentioned_by = file_url
                                 __check_reraise(mode, e)
+                                if mode in IGNORE_MISSING:
+                                    continue
 
                             hashsum = hashlib.new(
                                 hash_method_2, deb_file_content
