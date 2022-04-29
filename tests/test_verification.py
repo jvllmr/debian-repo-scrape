@@ -185,19 +185,6 @@ def test_hash_non_important_file(
             assert record.levelname == "WARNING"
 
 
-def test_signatures(navigator: BaseNavigator):
-
-    verify_release_signatures(navigator, keyfile)
-
-    with pytest.raises(FileRequestError):
-        with RemoveFile("tests/repo/dists/mx/Release"):
-            verify_release_signatures(navigator, keyfile)
-
-    with pytest.raises(FileRequestError):
-        with RemoveFile("tests/repo/dists/mx/Release.gpg"):
-            verify_release_signatures(navigator, keyfile)
-
-
 def test_hash_sums_suite_release_file(
     navigator: BaseNavigator, caplog: pytest.LogCaptureFixture
 ):
@@ -227,6 +214,28 @@ def test_hash_sums(navigator: BaseNavigator):
 
     with pytest.raises(ValueError):
         verify_hash_sums(navigator, "dawd34")
+
+
+def test_verify_signatures(navigator: BaseNavigator):
+
+    verify_release_signatures(navigator, keyfile)
+
+    with open(keyfile, "rb") as f:
+        verify_release_signatures(navigator, f)
+
+    with open(keyfile, "rb") as f:
+        verify_release_signatures(navigator, f.read())
+
+    with pytest.raises(TypeError):
+        verify_release_signatures(navigator, [])
+
+    with pytest.raises(FileRequestError):
+        with RemoveFile("tests/repo/dists/mx/Release"):
+            verify_release_signatures(navigator, keyfile)
+
+    with pytest.raises(FileRequestError):
+        with RemoveFile("tests/repo/dists/mx/Release.gpg"):
+            verify_release_signatures(navigator, keyfile)
 
 
 def test_verify_both(navigator: BaseNavigator):

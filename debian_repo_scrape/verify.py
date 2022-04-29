@@ -9,6 +9,7 @@ import os
 import re
 import typing as t
 from enum import Enum
+from io import BufferedReader
 from urllib.parse import urljoin
 
 from debian.deb822 import Packages
@@ -69,14 +70,27 @@ RAISE_EXCEPTION_IMPORTANT_FILE = (
 )
 
 
-def verify_release_signatures(repo_url: str | BaseNavigator, pub_key_file: str):
+def verify_release_signatures(
+    repo_url: str | BaseNavigator, pub_key_file: str | BufferedReader | bytes
+):
 
     navigator = (
         ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
     )
     navigator.set_checkpoint()
     navigator.reset()
-    pgp_key, _ = PGPKey.from_file(pub_key_file)
+
+    if isinstance(pub_key_file, BufferedReader):
+        pgp_key, _ = PGPKey.from_blob(pub_key_file.read())
+    elif isinstance(pub_key_file, str):
+        pgp_key, _ = PGPKey.from_file(pub_key_file)
+    elif isinstance(pub_key_file, bytes):
+        pgp_key, _ = PGPKey.from_blob(pub_key_file)
+    else:
+        raise TypeError(
+            f"{type(pub_key_file)} is not a valid type for public key input"
+        )
+
     for suite in get_suites(navigator):
 
         release_file = _get_release_file(navigator.base_url, suite)
@@ -190,7 +204,9 @@ def verify_hash_sums(
     navigator.use_checkpoint()
 
 
-def verify_repo_integrity(repo_url: str | BaseNavigator, pub_key_file: str):
+def verify_repo_integrity(
+    repo_url: str | BaseNavigator, pub_key_file: str | BufferedReader | bytes
+):
     navigator = (
         ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
     )

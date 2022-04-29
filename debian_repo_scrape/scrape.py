@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from io import BufferedReader
 from urllib.parse import urljoin
 
 import typing_extensions as te
@@ -66,24 +67,17 @@ class Package:
 
 def scrape_repo(
     repo_url: str | BaseNavigator,
+    pub_key_file: str | BufferedReader | bytes,
     verify: VerificationModes | str | te.Literal[False] = VerificationModes.STRICT,
-    pub_key_file: str | None = None,
 ) -> Repository:
     navigator = (
         ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
     )
 
     if verify:
+        verify_release_signatures(navigator, pub_key_file)
         verify_hash_sums(navigator, verify)
-        if pub_key_file is None:
-            log.warning(
-                """
-                Verifying debian repository integrity, but no public key was given.
-                As a result the release signatures will not be verified.
-                """
-            )
-        else:
-            verify_release_signatures(navigator, pub_key_file)
+
     navigator.set_checkpoint()
     navigator.reset()
     navigator["dists"]
