@@ -48,12 +48,19 @@ def _get_file(base_url: str, rel_path: str) -> bytes:
     return _get_file_abs(url)
 
 
-def _get_release_file(repo_url: str, suite: str):
-    return _get_file(repo_url, f"dists/{suite}/Release")
+def _get_release_file(repo_url: str, suite: str, flat_repo: bool = False):
+    if not flat_repo:
+        path = f"dists/{suite}/Release"
+    elif suite:
+        path = f"{suite}/Release"
+    else:
+        path = "Release"
+
+    return _get_file(repo_url, path)
 
 
-def get_release_file(repo_url: str, suite: str):
-    return Release(_get_release_file(repo_url, suite).split(b"\n"))
+def get_release_file(repo_url: str, suite: str, flat_repo: bool = False):
+    return Release(_get_release_file(repo_url, suite, flat_repo).split(b"\n"))
 
 
 def _get_packages_files(repo_url: str, suite: str) -> dict[str, list[bytes]]:
@@ -91,16 +98,19 @@ def get_packages_files(repo_url: str, suite: str) -> dict[str, list[Packages]]:
 def __get_suites(navigator: BaseNavigator) -> list[str]:
     suites: list[str] = []
     for suite in navigator.directions:
-
         if suite == "..":
             continue
 
         if re.match(r"binary-.+|sources", suite):
             log.warning(
-                f'Searching for suites lead to "{suite}" directory. If the folder is not part of a suite name, this means that the Release file for that suite is missing.'  # noqa: E501
+                f'Searching for suites lead to "{suite}" directory. If the folder is not part of a suite name, this usually means that the Release file for that suite is missing.'  # noqa: E501
             )
         navigator.set_checkpoint()
+        old_url = navigator.current_url
         navigator[suite]
+        if navigator.current_url == old_url:
+            continue
+
         if "Release" not in navigator.directions:
             suites.extend(f"{suite}/{subsuite}" for subsuite in __get_suites(navigator))
         else:
@@ -118,9 +128,22 @@ def get_suites(navigator: BaseNavigator) -> list[str]:
     try:
         navigator["dists"]
     except ValueError:  # pragma: no cover
-        raise NoDistsPath()
+        raise NoDistsPath
 
     suites = __get_suites(navigator)
+
+    navigator.use_checkpoint()
+    return suites
+
+
+def get_suites_flat(navigator: BaseNavigator) -> list[str]:
+    navigator.set_checkpoint()
+    navigator.reset()
+
+    if "Release" in navigator.directions:
+        suites = [""] + __get_suites(navigator)
+    else:
+        suites = __get_suites(navigator)
 
     navigator.use_checkpoint()
     return suites

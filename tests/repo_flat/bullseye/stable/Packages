@@ -1,0 +1,14 @@
+Package: poem
+Source: poem
+Maintainer: Jan Vollmer <janv@unknown>
+Standards-Version: 4.6.0
+Architecture: all
+Priority: optional
+Section: Database
+Filename: poem_1.0_all.deb
+Size: 5656
+SHA256: ea91ad473bcee83a239246d6767f65b9087bb31c9333b47c384661dc3dd51fb5
+SHA1: 03a0f18a4d6372bdd942200b7c403b0d08958d2c
+MD5sum: b828dad5fd5225a068951aa23b79651e
+Description: This adds a cool poem to /etc/dummyapp/
+Version: 1.0

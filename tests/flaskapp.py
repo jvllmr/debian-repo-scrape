@@ -26,9 +26,10 @@ def create_app():
     app = Flask("testapp", template_folder=os.path.dirname(__file__))
     app.config
 
-    @app.get("/debian/<path:path>")
-    def get_thingy(path: str):
-        requested_thingy = os.path.join(os.path.dirname(__file__), "repo", path)
+    def get_thingy(path: str, local_base_path: str):
+        requested_thingy = os.path.join(
+            os.path.dirname(__file__), local_base_path, path
+        )
 
         if "by-hash" in path:
             hash_ = os.path.basename(path)
@@ -45,6 +46,7 @@ def create_app():
                                     )
                         except IsADirectoryError:
                             continue
+            abort(404)
 
         if path == "forbidden":
             abort(403)
@@ -90,9 +92,21 @@ def create_app():
             get_padding=get_padding,
         )
 
+    @app.get("/debian/<path:path>")
+    def get_debian(path: str):
+        return get_thingy(path, "repo")
+
     @app.get("/debian/")
-    def base():
-        return get_thingy("")
+    def debian_base():
+        return get_thingy("", "repo")
+
+    @app.get("/debian_flat/<path:path>")
+    def get_debian_flat(path: str):
+        return get_thingy(path, "repo_flat")
+
+    @app.get("/debian_flat/")
+    def debian_flat_base():
+        return get_thingy("", "repo_flat")
 
     return app
 

@@ -30,6 +30,7 @@ from debian_repo_scrape.utils import (
     _get_release_file,
     get_release_file,
     get_suites,
+    get_suites_flat,
 )
 
 log = logging.getLogger(__name__)
@@ -71,7 +72,9 @@ RAISE_EXCEPTION_IMPORTANT_FILE = (
 
 
 def verify_release_signatures(
-    repo_url: str | BaseNavigator, pub_key_file: str | BufferedReader | bytes
+    repo_url: str | BaseNavigator,
+    pub_key_file: str | BufferedReader | bytes,
+    flat_repo: bool = False,
 ):
 
     navigator = (
@@ -91,17 +94,26 @@ def verify_release_signatures(
             f"{type(pub_key_file)} is not a valid type for public key input"
         )
 
-    for suite in get_suites(navigator):
+    suites = get_suites_flat(navigator) if flat_repo else get_suites(navigator)
 
-        release_file = _get_release_file(navigator.base_url, suite)
+    for suite in suites:
+
+        release_file = _get_release_file(navigator.base_url, suite, flat_repo)
+
+        if not flat_repo:
+            base_path = f"dists/{suite}/"
+        elif suite:
+            base_path = f"{suite}/"
+        else:
+            base_path = ""
 
         release_sig = PGPSignature.from_blob(
-            _get_file(navigator.base_url, f"dists/{suite}/Release.gpg")
+            _get_file(navigator.base_url, f"{base_path}Release.gpg")
         )
 
         pgp_key.verify(release_file, release_sig)
 
-        in_release_file = _get_file(navigator.base_url, f"dists/{suite}/InRelease")
+        in_release_file = _get_file(navigator.base_url, f"{base_path}InRelease")
         pgp_message = PGPMessage.from_blob(in_release_file)
         pgp_key.verify(pgp_message)
 
@@ -132,6 +144,7 @@ def __check_reraise(mode: str, e: FileError):
 def verify_hash_sums(
     repo_url: str | BaseNavigator,
     mode: VerificationModes | str = VerificationModes.STRICT,
+    flat_repo: bool = False,
 ):
     if isinstance(mode, VerificationModes):
         mode = mode.value
@@ -144,13 +157,18 @@ def verify_hash_sums(
     processed_urls: list[str] = []
     navigator.set_checkpoint()
     navigator.reset()
-    navigator["dists"]
-    for suite in get_suites(navigator):
-        release_file = get_release_file(navigator.base_url, suite)
+    if flat_repo:
+        suites = get_suites_flat(navigator)
+    else:
+        suites = get_suites(navigator)
+        navigator["dists"]
+    for suite in suites:
+        release_file = get_release_file(navigator.base_url, suite, flat_repo=flat_repo)
         release_file_url = urljoin(navigator.base_url, f"{suite}/Release")
 
         navigator.set_checkpoint()
-        navigator[suite]
+        if suite:
+            navigator[suite]
         for key, hash_method, exc in HASH_FUNCTION_MAP:
             hashed_files = release_file[key]
             if mode in VERIFY_IMPORTANT_ONLY:
@@ -218,10 +236,13 @@ def verify_hash_sums(
 
 
 def verify_repo_integrity(
-    repo_url: str | BaseNavigator, pub_key_file: str | BufferedReader | bytes
+    repo_url: str | BaseNavigator,
+    pub_key_file: str | BufferedReader | bytes,
+    mode: VerificationModes = VerificationModes.STRICT,
+    flat_repo: bool = False,
 ):
     navigator = (
         ApacheBrowseNavigator(repo_url) if isinstance(repo_url, str) else repo_url
     )
-    verify_release_signatures(navigator, pub_key_file)
-    verify_hash_sums(navigator)
+    verify_release_signatures(navigator, pub_key_file, flat_repo)
+    verify_hash_sums(navigator, mode, flat_repo)

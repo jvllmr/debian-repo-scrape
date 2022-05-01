@@ -100,6 +100,10 @@ class BaseNavigator(metaclass=ABCMeta):
             directions.add("..")
         elif ".." in directions:
             directions.remove("..")
+
+        if "" in directions:
+            directions.remove("")
+
         return directions
 
     @property
@@ -171,15 +175,29 @@ class PredefinedSuitesNavigator(BaseNavigator):
         base_url: str,
         suites: t.Iterable[str],
         predefined_paths: list[str] | None = None,
+        flat_repo: bool = False,
     ) -> None:
 
         self._paths: list[str] = predefined_paths or []
         if not base_url.endswith("/"):
             base_url += "/"
         for suite in suites:
-            release_path = "/".join(["dists", suite, "Release"])
+            release_path = "Release"
+            if suite:
+                release_path = (
+                    f"{suite}/{release_path}"
+                    if flat_repo
+                    else "/".join(["dists", suite, release_path])
+                )
+
             self._paths.append(release_path)
-            release_sig_path = "/".join(["dists", suite, "Release.gpg"])
+            release_sig_path = "Release.gpg"
+            if suite:
+                release_sig_path = (
+                    f"{suite}/{release_sig_path}"
+                    if flat_repo
+                    else "/".join(["dists", suite, release_sig_path])
+                )
             self._paths.append(release_sig_path)
             suite_release_url = urljoin(base_url, release_path)
             resp = _get_response(suite_release_url)
@@ -188,7 +206,9 @@ class PredefinedSuitesNavigator(BaseNavigator):
             release_file = Release(resp.content.split(b"\n"))
             for file in release_file["SHA256"]:
                 filename: str = file["name"]
-                self._paths.append(f"dists/{suite}/{filename}")
+                self._paths.append(
+                    f"{suite}/{filename}" if flat_repo else f"dists/{suite}/{filename}"
+                )
                 if filename.endswith("Packages"):
                     packages_url = urljoin(suite_release_url.strip("Release"), filename)
                     resp = _get_response(packages_url)
@@ -202,11 +222,18 @@ class PredefinedSuitesNavigator(BaseNavigator):
 
     def _parse_directions(self) -> t.Iterable[str]:
 
-        return [
+        directions = [
             path[len(self.url_diff) :]  # noqa: E203
             for path in self._paths
-            if path.startswith(self.url_diff.strip("/"))
+            if path.startswith(self.url_diff.lstrip("/"))
+            and (
+                len(path) >= len(self.url_diff)
+                and path[len(self.url_diff) - 1] == "/"
+                or not self.url_diff
+            )
         ]
+
+        return [direction for direction in directions if direction]
 
 
 class ApacheBrowseNavigator(BaseNavigator):

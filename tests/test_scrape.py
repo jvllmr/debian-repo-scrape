@@ -3,7 +3,7 @@ import os
 import pytest
 import requests
 
-from debian_repo_scrape.scrape import scrape_repo
+from debian_repo_scrape.scrape import scrape_flat_repo, scrape_repo
 from debian_repo_scrape.verify import VerificationModes
 
 
@@ -22,6 +22,13 @@ def test_scrape_test_repo(navigator):
     for suite in repo.suites:
         assert suite.components
         assert len(suite.components) == 1
+
+
+def test_scrape_flat_test_repo(flat_navigator):
+    repo = scrape_flat_repo(flat_navigator, pub_key_file="tests/public_key.gpg")
+    assert repo.packages
+    assert len(repo.suites) == 3
+    assert len(repo.packages) == 3
 
 
 skip_long = not os.getenv("PYTEST_LONGTESTS", "")

@@ -31,8 +31,18 @@ def repo_url():
 
 
 @fixture()
+def flat_repo_url():
+    return "http://localhost:5000/debian_flat/"
+
+
+@fixture()
 def apache_navigator(repo_url: str):
     return ApacheBrowseNavigator(repo_url.strip("/"))
+
+
+@fixture()
+def flat_apache_navigator(flat_repo_url: str):
+    return ApacheBrowseNavigator(flat_repo_url.strip("/"))
 
 
 @fixture()
@@ -42,8 +52,28 @@ def predefined_navigator(repo_url: str):
     )
 
 
+@fixture()
+def flat_predefined_navigator(flat_repo_url: str):
+    return PredefinedSuitesNavigator(
+        flat_repo_url.strip("/"),
+        ["", "wheezy", "bullseye/stable"],
+        ["public_key.asc"],
+        flat_repo=True,
+    )
+
+
 @fixture(
     params=[lazy_fixture("apache_navigator"), lazy_fixture("predefined_navigator")]
 )
 def navigator(request):
+    return request.param
+
+
+@fixture(
+    params=[
+        lazy_fixture("flat_apache_navigator"),
+        lazy_fixture("flat_predefined_navigator"),
+    ]
+)
+def flat_navigator(request):
     return request.param

@@ -1,0 +1,15 @@
+Origin: Testrepo
+Label: Testing repo
+Codename: mx
+Date: Sun, 03 Apr 2022 14:16:41 UTC
+Architectures: i386 amd64 armhf
+Description: A repo for testing debian_repo_tools
+MD5Sum:
+ 55192b02e876251a92438953d9a8026f 429 Packages
+ fe2d1e44eb87a5144b370cae7a0e0c51 334 Packages.gz
+SHA1:
+ 5c463b0deef32f6c33f16f522af85c051a5d0abd 429 Packages
+ 05deea203548f01897114420794331e2e26f545e 334 Packages.gz
+SHA256:
+ cd4d6f0eeb8883af823fd636aeffae95ae628af204ccd8d94d16c8577d7c1e82 429 Packages
+ a3f2353213a5e0e2d4afe231162d8de08fac7ee2a47ebc23752f723079035b0e 334 Packages.gz
