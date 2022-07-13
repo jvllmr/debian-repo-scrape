@@ -24,6 +24,13 @@ python-debian = "^0.1.43"
 beautifulsoup4 = "^4.10.0"
 PGPy = "^0.5.4"
 typing-extensions = "^4.2.0"
+SQLAlchemy = {version="^1.4.36", optional=true}
+
+
+[tool.poetry.extras]
+sql = ["SQLAlchemy"]
+all = ["sql"]
+
 
 [tool.poetry.dev-dependencies]
 Flask = "^2.1.1"
@@ -39,6 +46,8 @@ types-beautifulsoup4 = "^4.10.20"
 flake8 = "^4.0.1"
 pytest-flask = "^1.2.0"
 types-requests = "^2.27.23"
+sqlalchemy-stubs = "^0.4"
+SQLAlchemy = "^1.4.36"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
