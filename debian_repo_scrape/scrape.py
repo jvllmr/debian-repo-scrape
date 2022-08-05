@@ -13,6 +13,7 @@ from debian.deb822 import Packages
 from debian_repo_scrape.navigation import ApacheBrowseNavigator, BaseNavigator
 from debian_repo_scrape.utils import (
     _get_file,
+    clear_response_cache,
     get_packages_files,
     get_release_file,
     get_suites,
@@ -164,6 +165,7 @@ def scrape_repo(
             )
         )
     navigator.use_checkpoint()
+    clear_response_cache()
     return Repository(url=navigator.base_url, suites=suites)
 
 
@@ -222,4 +224,5 @@ def scrape_flat_repo(
         )
 
     navigator.use_checkpoint()
+    clear_response_cache()
     return Repository(url=navigator.base_url, suites=suites)

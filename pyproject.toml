@@ -2,17 +2,11 @@
 name = "debian-repo-scrape"
 version = "0.2.0"
 description = "Utilities for verifying debian repositories and retrieving their information"
-authors = ["Jan Vollmer <zunder325@gmail.com>"]
+authors = ["Jan Vollmer <jan@vllmr.dev>"]
 license = "MIT"
 readme="README.md"
-repository="https://github.com/kreyoo/debian-repo-scrape"
+repository="https://github.com/jvllmr/debian-repo-scrape"
 classifiers=[
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ]
@@ -65,10 +59,10 @@ addopts = "--live-server-port 5000 --cov --cov-report=html --cov-report=xml"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist= py37,py38, py39, py310
+envlist= py37,py38, py39, py310, py311
 
 [testenv]
 commands =
     pytest
-
+    mypy
 """

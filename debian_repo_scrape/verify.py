@@ -28,6 +28,7 @@ from debian_repo_scrape.utils import (
     _get_file,
     _get_file_abs,
     _get_release_file,
+    clear_response_cache,
     get_release_file,
     get_suites,
     get_suites_flat,
@@ -118,6 +119,7 @@ def verify_release_signatures(
         pgp_key.verify(pgp_message)
 
     navigator.use_checkpoint()
+    clear_response_cache()
 
 
 def __check_important(file: str) -> bool:
@@ -233,6 +235,7 @@ def verify_hash_sums(
                                 __check_reraise(mode, exc_2(deb_file_url, file_url))
         navigator.use_checkpoint()
     navigator.use_checkpoint()
+    clear_response_cache()
 
 
 def verify_repo_integrity(

@@ -7,12 +7,6 @@ from debian_repo_scrape.navigation import (
     ApacheBrowseNavigator,
     PredefinedSuitesNavigator,
 )
-from debian_repo_scrape.utils import clear_response_cache
-
-
-@fixture(autouse=True)
-def clear_cache():
-    clear_response_cache()
 
 
 @fixture(scope="session")
